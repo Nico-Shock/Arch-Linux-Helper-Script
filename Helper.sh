@@ -12,10 +12,10 @@ echo -e "${blue}Willkommen zum Arch Linux Installations-Skript!${reset}"
 
 # Funktion, um die Ausführung zu bestätigen
 confirm_continue() {
-  echo -e "${blue}Press Y to continue: ${reset}"
+  echo -e "${blue}Drücke J, um fortzufahren:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ ! $response =~ ^[Yy]$ ]]; then
+  if [[ ! $response =~ ^[Jj]$ ]]; then
     echo -e "${red}Abgebrochen.${reset}"
     exit 1
   fi
@@ -25,10 +25,10 @@ confirm_continue() {
 install_packages() {
   local packages=()
   for package in "$@"; do
-    echo -e "${blue}Soll $package installiert werden? [y/n]: ${reset}"
+    echo -e "${blue}Soll $package installiert werden? [j/n]:${reset} J"
     read -r -n 1 response
     echo ""
-    if [[ $response =~ ^[Yy]$ ]]; then
+    if [[ $response =~ ^[Jj]$ ]]; then
       packages+=("$package")
     fi
   done
@@ -43,29 +43,29 @@ install_packages() {
 
 # Funktion, um CachyOS-Repository hinzuzufügen
 install_cachyos_repo() {
-  echo -e "${blue}Install CachyOS-AUR-Repos? [y/n]: ${reset}"
+  echo -e "${blue}CachyOS-AUR-Repos installieren? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
+  if [[ $response =~ ^[Jj]$ ]]; then
     wget https://mirror.cachyos.org/cachyos-repo.tar.xz
     tar xvf cachyos-repo.tar.xz && cd cachyos-repo
     sudo ./cachyos-repo.sh
     cd ..
     sudo rm -r cachyos-repo.tar.xz cachyos-repo
-    sudo pacman -S cachyos-settings
+    sudo pacman -S --noconfirm cachyos-settings
   fi
 }
 
 # Funktion, um Chaotic-AUR-Repository hinzuzufügen
 install_chaotic_repo() {
-  echo -e "${blue}Install Chaotic-AUR-Repos? [y/n]: ${reset}"
+  echo -e "${blue}Chaotic-AUR-Repos installieren? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
+  if [[ $response =~ ^[Jj]$ ]]; then
     sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     sudo pacman-key --lsign-key 3056513887B78AEB
-    sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-    sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
     # Ändern von /etc/pacman.conf
     sudo sed -i '$d' /etc/pacman.conf
@@ -80,32 +80,32 @@ install_chaotic_repo() {
 
 # Funktion, um spezifische Software zu installieren
 install_specific_software() {
-  echo -e "${blue}Install CachyOS Kernel Manager? [y/n]: ${reset}"
+  echo -e "${blue}CachyOS Kernel Manager installieren? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    sudo pacman -S cachyos-kernel-manager
+  if [[ $response =~ ^[Jj]$ ]]; then
+    sudo pacman -S --noconfirm cachyos-kernel-manager
   fi
 
-  echo -e "${blue}Install CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine)? [y/n]: ${reset}"
+  echo -e "${blue}CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine) installieren? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    sudo pacman -S proton steam lutris heroic-games-launcher wine
+  if [[ $response =~ ^[Jj]$ ]]; then
+    sudo pacman -S --noconfirm proton steam lutris heroic-games-launcher wine
   fi
 
-  echo -e "${blue}Install CachyOS Open NVIDIA Drivers? [y/n]: ${reset}"
+  echo -e "${blue}CachyOS Open NVIDIA Treiber installieren? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    sudo pacman -S linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  if [[ $response =~ ^[Jj]$ ]]; then
+    sudo pacman -S --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   fi
 
-  echo -e "${blue}Install Recommended Software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload)? [y/n]: ${reset}"
+  echo -e "${blue}Empfohlene Software installieren (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload)? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    sudo pacman -S yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload
+  if [[ $response =~ ^[Jj]$ ]]; then
+    sudo pacman -S --noconfirm yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload
     sudo systemctl enable bluetooth ufw preload
   fi
 }
@@ -116,9 +116,10 @@ install_cachyos_repo
 install_chaotic_repo
 install_specific_software
 
-echo -e "${blue}Ändere deine Bootloader-Konfiguration manuell, um den neu installierten Kernel zu booten. Continue with Y: ${reset}"
+sleep 2
+echo -e "${blue}Ändere deine Bootloader-Konfiguration manuell, um den neu installierten Kernel zu booten. Weiter mit J:${reset} J"
 read -r -n 1 response
-if [[ $response =~ ^[Yy]$ ]]; then
+if [[ $response =~ ^[Jj]$ ]]; then
   echo -e "${green}Fertig!${reset}"
 else
   echo -e "${red}Abgebrochen.${reset}"
