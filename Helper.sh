@@ -5,7 +5,6 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
-# Trap Ctrl+C (SIGINT) to exit immediately without showing a message
 trap "exit" SIGINT
 
 clear
@@ -131,9 +130,4 @@ install_specific_software
 
 sleep 2
 echo -e "${blue}Install the linux-cachyos or linux-cachyos-rc (better performance but more unstable). Recommended for emulation is the stable one and for regular gaming, the rc one can work great. Manually change your bootloader config to boot the right installed kernel.${reset}"
-read -r -n 1 response
-if [[ $response =~ ^[Yy]$ ]]; then
-  echo -e "${green}Done!${reset}"
-else
-  echo -e "${red}Aborted.${reset}"
-fi
+exit 0
