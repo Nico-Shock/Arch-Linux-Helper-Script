@@ -40,8 +40,8 @@ install_gnome_tweaks=false
 clear
 echo -e "${blue}Welcome to the Arch Linux post installation script${reset}"
 
-ask_user "Do you want to add the CachyOS repository?" install_cachyos
-ask_user "Do you want to add the Chaotic-AUR repository?" install_chaotic
+ask_user "Do you want to install the CachyOS repos?" install_cachyos
+ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
 ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, etc.)?" install_gaming_meta
 ask_user "Do you want to install NVIDIA open drivers?" install_nvidia_drivers
