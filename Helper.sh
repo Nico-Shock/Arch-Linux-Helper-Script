@@ -13,7 +13,8 @@ echo -e "${blue}Willkommen zum Arch Linux Installations-Skript!${reset}"
 # Funktion, um die Ausführung zu bestätigen
 confirm_continue() {
   echo -e "${blue}Press Y to continue: ${reset}"
-  read -r response
+  read -r -n 1 response
+  echo ""
   if [[ ! $response =~ ^[Yy]$ ]]; then
     echo -e "${red}Abgebrochen.${reset}"
     exit 1
@@ -25,7 +26,8 @@ install_packages() {
   local packages=()
   for package in "$@"; do
     echo -e "${blue}Soll $package installiert werden? [y/n]: ${reset}"
-    read -r response
+    read -r -n 1 response
+    echo ""
     if [[ $response =~ ^[Yy]$ ]]; then
       packages+=("$package")
     fi
@@ -42,7 +44,8 @@ install_packages() {
 # Funktion, um CachyOS-Repository hinzuzufügen
 install_cachyos_repo() {
   echo -e "${blue}Install CachyOS-AUR-Repos? [y/n]: ${reset}"
-  read -r response
+  read -r -n 1 response
+  echo ""
   if [[ $response =~ ^[Yy]$ ]]; then
     wget https://mirror.cachyos.org/cachyos-repo.tar.xz
     tar xvf cachyos-repo.tar.xz && cd cachyos-repo
@@ -56,7 +59,8 @@ install_cachyos_repo() {
 # Funktion, um Chaotic-AUR-Repository hinzuzufügen
 install_chaotic_repo() {
   echo -e "${blue}Install Chaotic-AUR-Repos? [y/n]: ${reset}"
-  read -r response
+  read -r -n 1 response
+  echo ""
   if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     sudo pacman-key --lsign-key 3056513887B78AEB
@@ -77,25 +81,29 @@ install_chaotic_repo() {
 # Funktion, um spezifische Software zu installieren
 install_specific_software() {
   echo -e "${blue}Install CachyOS Kernel Manager? [y/n]: ${reset}"
-  read -r response
+  read -r -n 1 response
+  echo ""
   if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S cachyos-kernel-manager
   fi
 
-  echo -e "${blue}Install CachyOS Gaming Tools (Proton, Steam, Lutris, Heroic Game Launcher, Wine)? [y/n]: ${reset}"
-  read -r response
+  echo -e "${blue}Install CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine)? [y/n]: ${reset}"
+  read -r -n 1 response
+  echo ""
   if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S proton steam lutris heroic-games-launcher wine
   fi
 
   echo -e "${blue}Install CachyOS Open NVIDIA Drivers? [y/n]: ${reset}"
-  read -r response
+  read -r -n 1 response
+  echo ""
   if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   fi
 
-  echo -e "${blue}Install Recommended Software? [y/n]: ${reset}"
-  read -r response
+  echo -e "${blue}Install Recommended Software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload)? [y/n]: ${reset}"
+  read -r -n 1 response
+  echo ""
   if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload
     sudo systemctl enable bluetooth ufw preload
@@ -109,7 +117,7 @@ install_chaotic_repo
 install_specific_software
 
 echo -e "${blue}Ändere deine Bootloader-Konfiguration manuell, um den neu installierten Kernel zu booten. Continue with Y: ${reset}"
-read -r response
+read -r -n 1 response
 if [[ $response =~ ^[Yy]$ ]]; then
   echo -e "${green}Fertig!${reset}"
 else
