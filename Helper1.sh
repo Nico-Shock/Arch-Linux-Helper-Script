@@ -43,7 +43,7 @@ echo -e "${blue}Welcome to the Arch Linux post installation script${reset}"
 ask_user "Do you want to add the CachyOS repository?" install_cachyos
 ask_user "Do you want to add the Chaotic-AUR repository?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
-ask_user "Do you want to install the Gaming Meta (Proton, Steam, Lutris, etc.)?" install_gaming_meta
+ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, etc.)?" install_gaming_meta
 ask_user "Do you want to install NVIDIA open drivers?" install_nvidia_drivers
 ask_user "Do you want to install recommended software (yay, ufw, etc.)?" install_recommended_software
 
