@@ -43,8 +43,8 @@ echo -e "${blue}Welcome to the Arch Linux post installation script${reset}"
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
-ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine)?" install_gaming_meta
-ask_user "Do you want to install Nvidia open drivers?" install_nvidia_drivers
+ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Games Launcher, Wine – idk the exact package names)" install_gaming_meta
+ask_user "Do you want to install Nvidia open drivers (linux-cachyos-nvidia-open, libglvnd, nvidia-utils, opencl-nvidia, lib32-libglvnd, lib32-nvidia-utils, lib32-opencl-nvidia, nvidia-settings)?" install_nvidia_drivers
 ask_user "Do you want to install recommended software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)?" install_recommended_software
 
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
@@ -84,7 +84,7 @@ if $install_kernel_manager; then
 fi
 
 if $install_gaming_meta; then
-  echo -e "${green}Installing Gaming Meta...${reset}"
+  echo -e "${green}Installing CachyOS Gaming Meta...${reset}"
 fi
 
 if $install_nvidia_drivers; then
