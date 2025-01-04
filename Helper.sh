@@ -127,7 +127,7 @@ install_chaotic_repo
 install_specific_software
 
 sleep 2
-echo -e "${blue}Manually change your bootloader configuration to boot the newly installed kernel. Continue with Y:${reset}"
+echo -e "${blue}Install the linux-cachyos or linux-cachyos-rc (better performance but more unstable). Recommended for emulation is the stable one and for regular gaming, the rc one can work great. Manually change your bootloader config to boot the right installed kernel.${reset}"
 read -r -n 1 response
 if [[ $response =~ ^[Yy]$ ]]; then
   echo -e "${green}Done!${reset}"
