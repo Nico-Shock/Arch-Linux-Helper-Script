@@ -47,7 +47,7 @@ ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris,
 ask_user "Do you want to install Nvidia open drivers?" install_nvidia_drivers
 ask_user "Do you want to install recommended software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)?" install_recommended_software
 
-echo -e "${blue}Do you use KDE or GNOME? [k/g/n for none]:${reset}"
+echo -e "${blue}Do you use KDE or GNOME? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
 if [[ $desktop_env =~ ^[Kk]$ ]]; then
