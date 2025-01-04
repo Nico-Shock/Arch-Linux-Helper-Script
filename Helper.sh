@@ -8,11 +8,11 @@ reset="\e[0m"
 
 # Begrüßung
 clear
-echo -e "${blue}Willkommen zum Arch Linux Installations-Skript!${reset}"
+echo -e "${blue}Willkommen zu meinem Arch Linux Installations-Skript${reset}"
 
 # Funktion, um die Ausführung zu bestätigen
 confirm_continue() {
-  echo -e "${blue}Drücke J, um fortzufahren:${reset} J"
+  echo -e "${blue}Drücke J, um fortzufahren:${reset}"
   read -r -n 1 response
   echo ""
   if [[ ! $response =~ ^[Jj]$ ]]; then
@@ -25,7 +25,7 @@ confirm_continue() {
 install_packages() {
   local packages=()
   for package in "$@"; do
-    echo -e "${blue}Soll $package installiert werden? [j/n]:${reset} J"
+    echo -e "${blue}Soll $package installiert werden? [j/n]:${reset}"
     read -r -n 1 response
     echo ""
     if [[ $response =~ ^[Jj]$ ]]; then
@@ -43,7 +43,7 @@ install_packages() {
 
 # Funktion, um CachyOS-Repository hinzuzufügen
 install_cachyos_repo() {
-  echo -e "${blue}CachyOS-AUR-Repos installieren? [j/n]:${reset} J"
+  echo -e "${blue}CachyOS-AUR-Repos installieren? [j/n]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
@@ -58,7 +58,7 @@ install_cachyos_repo() {
 
 # Funktion, um Chaotic-AUR-Repository hinzuzufügen
 install_chaotic_repo() {
-  echo -e "${blue}Chaotic-AUR-Repos installieren? [j/n]:${reset} J"
+  echo -e "${blue}Chaotic-AUR-Repos installieren? [j/n]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
@@ -80,28 +80,28 @@ install_chaotic_repo() {
 
 # Funktion, um spezifische Software zu installieren
 install_specific_software() {
-  echo -e "${blue}CachyOS Kernel Manager installieren? [j/n]:${reset} J"
+  echo -e "${blue}CachyOS Kernel Manager installieren? [j/n]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
     sudo pacman -S --noconfirm cachyos-kernel-manager
   fi
 
-  echo -e "${blue}CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine) installieren? [j/n]:${reset} J"
+  echo -e "${blue}CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine) installieren? [j/n]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
     sudo pacman -S --noconfirm proton steam lutris heroic-games-launcher wine
   fi
 
-  echo -e "${blue}CachyOS Open NVIDIA Treiber installieren? [j/n]:${reset} J"
+  echo -e "${blue}CachyOS Open NVIDIA Treiber installieren? [j/n]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
     sudo pacman -S --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   fi
 
-  echo -e "${blue}Empfohlene Software installieren (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)? [j/n]:${reset} J"
+  echo -e "${blue}Empfohlene Software installieren (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)? [j/n]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
@@ -109,18 +109,18 @@ install_specific_software() {
     sudo systemctl enable bluetooth ufw preload
   fi
 
-  echo -e "${blue}Benutzt du KDE oder GNOME? [k/g]:${reset} K"
+  echo -e "${blue}Benutzt du KDE oder GNOME? [k/g]:${reset}"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Kk]$ ]]; then
-    echo -e "${blue}Dolphin installieren? [j/n]:${reset} J"
+    echo -e "${blue}Dolphin installieren? [j/n]:${reset}"
     read -r -n 1 response
     echo ""
     if [[ $response =~ ^[Jj]$ ]]; then
       sudo pacman -S --noconfirm dolphin
     fi
   elif [[ $response =~ ^[Gg]$ ]]; then
-    echo -e "${blue}GNOME Tweaks installieren? [j/n]:${reset} J"
+    echo -e "${blue}GNOME Tweaks installieren? [j/n]:${reset}"
     read -r -n 1 response
     echo ""
     if [[ $response =~ ^[Jj]$ ]]; then
@@ -136,7 +136,7 @@ install_chaotic_repo
 install_specific_software
 
 sleep 2
-echo -e "${blue}Ändere deine Bootloader-Konfiguration manuell, um den neu installierten Kernel zu booten. Weiter mit J:${reset} J"
+echo -e "${blue}Ändere deine Bootloader-Konfiguration manuell, um den neu installierten Kernel zu booten. Weiter mit J:${reset}"
 read -r -n 1 response
 if [[ $response =~ ^[Jj]$ ]]; then
   echo -e "${green}Fertig!${reset}"
