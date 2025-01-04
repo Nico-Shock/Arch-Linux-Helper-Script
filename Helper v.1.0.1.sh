@@ -47,13 +47,13 @@ ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris,
 ask_user "Do you want to install Nvidia open drivers?" install_nvidia_drivers
 ask_user "Do you want to install recommended software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)?" install_recommended_software
 
-echo -e "${blue}Do you use KDE or GNOME? [k/g/n]:${reset}"
+echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
 if [[ $desktop_env =~ ^[Kk]$ ]]; then
   ask_user "Do you want to install Dolphin?" install_dolphin
 elif [[ $desktop_env =~ ^[Gg]$ ]]; then
-  ask_user "Do you want to install GNOME Tweaks?" install_gnome_tweaks
+  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 fi
 
 echo -e "${blue}Starting installation based on your responses...${reset}"
@@ -81,33 +81,26 @@ fi
 
 if $install_kernel_manager; then
   echo -e "${green}Installing CachyOS Kernel Manager...${reset}"
-  install_packages cachyos-kernel-manager
 fi
 
 if $install_gaming_meta; then
   echo -e "${green}Installing Gaming Meta...${reset}"
-  install_packages proton steam lutris heroic-games-launcher wine
 fi
 
 if $install_nvidia_drivers; then
   echo -e "${green}Installing NVIDIA open drivers...${reset}"
-  install_packages linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
 
 if $install_recommended_software; then
   echo -e "${green}Installing recommended software...${reset}"
-  install_packages yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
-  sudo systemctl enable bluetooth ufw preload
 fi
 
 if $install_dolphin; then
   echo -e "${green}Installing Dolphin...${reset}"
-  install_packages dolphin
 fi
 
 if $install_gnome_tweaks; then
-  echo -e "${green}Installing GNOME Tweaks...${reset}"
-  install_packages gnome-tweaks
+  echo -e "${green}Installing Gnome Tweaks...${reset}"
 fi
 
 echo -e "${green}Script completed.${reset}"
