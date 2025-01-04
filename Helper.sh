@@ -5,8 +5,11 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
+# Trap Ctrl+C (SIGINT) to exit immediately without showing a message
+trap "exit" SIGINT
+
 clear
-echo -e "${blue}Welcome to my Arch Linux installation script${reset}"
+echo -e "${blue}Welcome to my Arch Linux post-installation helper script${reset}"
 
 confirm_continue() {
   echo -e "${blue}Press Y to continue:${reset}"
