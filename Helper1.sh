@@ -44,7 +44,7 @@ ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
 ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Game Launcher, Wine)?" install_gaming_meta
-ask_user "Do you want to install NVIDIA open drivers?" install_nvidia_drivers
+ask_user "Do you want to install Nvidia open drivers?" install_nvidia_drivers
 ask_user "Do you want to install recommended software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)?" install_recommended_software
 
 echo -e "${blue}Do you use KDE or GNOME? [k/g/n for none]:${reset}"
