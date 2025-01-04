@@ -20,7 +20,7 @@ install_packages() {
     echo -e "${blue}Install $package? [y/n]:${reset}"
     read -r -n 1 response
     echo ""
-    if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
+    if [[ $response =~ ^[Yy]$ ]]; then
       packages+=("$package")
     fi
   done
@@ -37,8 +37,7 @@ install_cachyos_repo() {
   echo -e "${blue}Install CachyOS AUR repositories? [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-    confirm_continue
+  if [[ $response =~ ^[Yy]$ ]]; then
     wget https://mirror.cachyos.org/cachyos-repo.tar.xz
     tar xvf cachyos-repo.tar.xz && cd cachyos-repo
     sudo ./cachyos-repo.sh
@@ -52,8 +51,7 @@ install_chaotic_repo() {
   echo -e "${blue}Install Chaotic-AUR repositories? [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-    confirm_continue
+  if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     sudo pacman-key --lsign-key 3056513887B78AEB
     sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
@@ -73,32 +71,28 @@ install_specific_software() {
   echo -e "${blue}Install CachyOS Kernel Manager? [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-    confirm_continue
+  if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S --noconfirm cachyos-kernel-manager
   fi
 
   echo -e "${blue}Install CachyOS Gaming Meta? [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-    confirm_continue
+  if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S --noconfirm proton steam lutris heroic-games-launcher wine
   fi
 
   echo -e "${blue}Install CachyOS Open NVIDIA Drivers? [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-    confirm_continue
+  if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   fi
 
   echo -e "${blue}Install recommended software? [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-    confirm_continue
+  if [[ $response =~ ^[Yy]$ ]]; then
     sudo pacman -S --noconfirm yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
     sudo systemctl enable bluetooth ufw preload
   fi
@@ -110,16 +104,14 @@ install_specific_software() {
     echo -e "${blue}Install Dolphin? [y/n]:${reset}"
     read -r -n 1 response
     echo ""
-    if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-      confirm_continue
+    if [[ $response =~ ^[Yy]$ ]]; then
       sudo pacman -S --noconfirm dolphin
     fi
   elif [[ $response =~ ^[Gg]$ ]]; then
     echo -e "${blue}Install GNOME Tweaks? [y/n]:${reset}"
     read -r -n 1 response
     echo ""
-    if [[ $response =~ ^[Yy]$ || $response == "" ]]; then
-      confirm_continue
+    if [[ $response =~ ^[Yy]$ ]]; then
       sudo pacman -S --noconfirm gnome-tweaks
     fi
   fi
