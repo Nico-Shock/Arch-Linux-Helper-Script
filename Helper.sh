@@ -8,7 +8,7 @@ reset="\e[0m"
 trap "exit" SIGINT
 
 clear
-echo -e "${blue}Welcome to my Arch Linux post-installation helper script${reset}"
+echo -e "${blue}Welcome to my Arch Linux post installation helper script${reset}"
 
 confirm_continue() {
   echo -e "${blue}Press Y to continue:${reset}"
