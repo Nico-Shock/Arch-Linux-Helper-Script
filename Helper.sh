@@ -101,12 +101,31 @@ install_specific_software() {
     sudo pacman -S --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   fi
 
-  echo -e "${blue}Empfohlene Software installieren (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload)? [j/n]:${reset} J"
+  echo -e "${blue}Empfohlene Software installieren (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)? [j/n]:${reset} J"
   read -r -n 1 response
   echo ""
   if [[ $response =~ ^[Jj]$ ]]; then
-    sudo pacman -S --noconfirm yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload
+    sudo pacman -S --noconfirm yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
     sudo systemctl enable bluetooth ufw preload
+  fi
+
+  echo -e "${blue}Benutzt du KDE oder GNOME? [k/g]:${reset} K"
+  read -r -n 1 response
+  echo ""
+  if [[ $response =~ ^[Kk]$ ]]; then
+    echo -e "${blue}Dolphin installieren? [j/n]:${reset} J"
+    read -r -n 1 response
+    echo ""
+    if [[ $response =~ ^[Jj]$ ]]; then
+      sudo pacman -S --noconfirm dolphin
+    fi
+  elif [[ $response =~ ^[Gg]$ ]]; then
+    echo -e "${blue}GNOME Tweaks installieren? [j/n]:${reset} J"
+    read -r -n 1 response
+    echo ""
+    if [[ $response =~ ^[Jj]$ ]]; then
+      sudo pacman -S --noconfirm gnome-tweaks
+    fi
   fi
 }
 
