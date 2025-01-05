@@ -8,6 +8,13 @@ trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
 set -e
 
+response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
+
+while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
+  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  read -r -n 1 desktop_env
+done
+
 ask_user() {
   local prompt="$1"
   local var_name="$2"
@@ -135,6 +142,12 @@ disable_useless_repos() {
 
 if $install_cachyos || $install_chaotic; then
   disable_useless_repos
+  
 fi
+cleanup_temp_files() {
+  sudo pacman -Scc --noconfirm
+}
+
+cleanup_temp_files
 
 exit 0
