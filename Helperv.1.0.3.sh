@@ -66,7 +66,7 @@ read -r -n 1 desktop_env
 echo ""
 
 while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
-  echo -e "${blue}Invalid input. Please try again.[k/g/n]:${reset}"
+  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
   read -r -n 1 desktop_env
   echo ""
 done
