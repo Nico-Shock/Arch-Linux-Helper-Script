@@ -13,14 +13,20 @@ response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
 ask_user() {
   local prompt="$1"
   local var_name="$2"
-  echo -e "${blue}${prompt} [y/n]:${reset}"
-  read -r -n 1 response
-  echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    eval "$var_name=true"
-  else
-    eval "$var_name=false"
-  fi
+  while true; do
+    echo -e "${blue}${prompt} [y/n]:${reset}"
+    read -r -n 1 response
+    echo ""
+    if [[ $response =~ ^[Yy]$ ]]; then
+      eval "$var_name=true"
+      break
+    elif [[ $response =~ ^[Nn]$ ]]; then
+      eval "$var_name=false"
+      break
+    else
+      echo -e "${blue}Invalid input. Please try again.[y/n]:${reset}"
+    fi
+  done
 }
 
 install_packages() {
@@ -60,10 +66,16 @@ read -r -n 1 desktop_env
 echo ""
 
 while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
-  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  echo -e "${blue}Invalid input. Please try again.[k/g/n]:${reset}"
   read -r -n 1 desktop_env
   echo ""
 done
+
+if [[ $desktop_env =~ ^[Kk]$ ]]; then
+  ask_user "Do you want to install Dolphin?" install_dolphin
+elif [[ $desktop_env =~ ^[Gg]$ ]]; then
+  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
+fi
 
 if $install_cachyos; then
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
