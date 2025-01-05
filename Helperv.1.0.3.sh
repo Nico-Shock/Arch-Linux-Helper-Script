@@ -10,11 +10,6 @@ set -e
 
 response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
 
-while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
-  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
-  read -r -n 1 desktop_env
-done
-
 ask_user() {
   local prompt="$1"
   local var_name="$2"
@@ -59,11 +54,22 @@ ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, p
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
-if [[ $desktop_env =~ ^[Kk]$ ]]; then
-  ask_user "Do you want to install Dolphin?" install_dolphin
-elif [[ $desktop_env =~ ^[Gg]$ ]]; then
-  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
-fi
+
+while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
+  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  read -r -n 1 desktop_env
+  echo ""
+done
+
+echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
+read -r -n 1 desktop_env
+echo ""
+
+while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
+  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  read -r -n 1 desktop_env
+  echo ""
+done
 
 if $install_cachyos; then
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
