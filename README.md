@@ -18,3 +18,7 @@
 - Then execute it: `./Helper.sh`
 
 *Sorry btw that I "spam" the releases every time when I write a new script. I need to get used to it, but after like 3-4 releases, it will get better and I won't spam the releases that much.*
+
+**Troubleshooting:**
+
+- If you get a question about adding the "Gardua Build" key, press **no** because while system upgrade it will fail completely and you need to manually install the CachyOS repos again.
