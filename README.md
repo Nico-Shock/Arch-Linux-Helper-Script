@@ -10,3 +10,11 @@
 - **Installs lots of recommended software (the script will show you the installed packages).**
 
 ### *The script asks you about every step you're running before it gets executed. Future updates will be made to improve the experience.*
+
+**How to run the script:**
+
+- Go into the directory of the file, for example, for Downloads: `cd Downloads/`
+- Then make the file executable: `chmod +x Helper.sh`
+- Then execute it: `./Helper.sh`
+
+*Sorry btw that I "spam" the releases every time when I write a new script. I need to get used to it, but after like 3-4 releases, it will get better and I won't spam the releases that much.*
