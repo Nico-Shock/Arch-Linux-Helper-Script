@@ -21,4 +21,4 @@
 
 **Troubleshooting:**
 
-- If you get a question about adding the "Gardua Build" key, press **no** because while system upgrade it will fail completely and you need to manually install the CachyOS repos again.
+- If you get a question about adding the "Garuda Build" key, press **no** because while system upgrade it will fail completely and you need to manually install the CachyOS repos again.
