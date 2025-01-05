@@ -6,6 +6,8 @@ reset="\e[0m"
 
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
+set -e
+
 ask_user() {
   local prompt="$1"
   local var_name="$2"
@@ -37,7 +39,7 @@ install_dolphin=false
 install_gnome_tweaks=false
 
 clear
-echo -e "${blue}Welcome to the Arch Linux post installation script!${reset}"
+echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
 
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
@@ -75,6 +77,14 @@ if $install_chaotic; then
   sudo pacman -Sy
 fi
 
+if $install_kernel_manager; then
+  sudo pacman -S --noconfirm cachyos-kernel-manager
+fi
+
+if $install_gaming_meta; then
+  sudo pacman -S --noconfirm cachyos-gaming-meta
+fi
+
 if $install_open_nvidia_driver; then
   sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
@@ -102,6 +112,7 @@ fi
 
 if $install_recommended_software; then
   install_packages yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
+  sudo systemctl enable --now ufw bluetooth preload
 fi
 
 make_system_more_stable() {
