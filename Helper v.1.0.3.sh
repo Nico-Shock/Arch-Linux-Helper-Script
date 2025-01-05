@@ -44,6 +44,7 @@ install_dolphin=false
 install_gnome_tweaks=false
 
 clear
+echo -e "${blue}Welcome to the Arch Linux post installation script!${reset}"
 
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
