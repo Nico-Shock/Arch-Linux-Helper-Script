@@ -14,11 +14,10 @@ ask_user() {
   echo -e "${blue}${prompt} [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    eval "$var_name=true"
-  else
-    eval "$var_name=false"
-  fi
+  case $response in
+    [Yy]) declare -g "$var_name=true" ;;
+    *) declare -g "$var_name=false" ;;
+  esac
 }
 
 install_packages() {
@@ -26,6 +25,12 @@ install_packages() {
   if [ ${#packages[@]} -ne 0 ]; then
     sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
+}
+
+download_and_install() {
+  local url="$1"
+  local dest="$2"
+  wget -q "$url" -O "$dest" && tar xf "$dest"
 }
 
 install_cachyos=false
@@ -58,21 +63,19 @@ elif [[ $desktop_env =~ ^[Gg]$ ]]; then
 fi
 
 if $install_cachyos; then
-  wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
-  tar xvf cachyos-repo.tar.xz &&
-  cd cachyos-repo &&
-  sudo ./cachyos-repo.sh &&
-  cd .. &&
-  rm -rf cachyos-repo cachyos-repo.tar.xz &&
+  download_and_install "https://mirror.cachyos.org/cachyos-repo.tar.xz" "cachyos-repo.tar.xz"
+  cd cachyos-repo
+  sudo ./cachyos-repo.sh
+  cd .. && rm -rf cachyos-repo cachyos-repo.tar.xz
   sudo pacman -S --noconfirm cachyos-settings
 fi
 
 if $install_chaotic; then
-  sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com &&
-  sudo pacman-key --lsign-key 3056513887B78AEB &&
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
-  grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf &&
+  sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+  sudo pacman-key --lsign-key 3056513887B78AEB
+  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
+  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
+  grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf
   sudo pacman -Sy
 fi
 
