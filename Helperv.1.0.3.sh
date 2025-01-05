@@ -6,18 +6,17 @@ reset="\e[0m"
 
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
-set -e
-
 ask_user() {
   local prompt="$1"
   local var_name="$2"
   echo -e "${blue}${prompt} [y/n]:${reset}"
   read -r -n 1 response
   echo ""
-  case $response in
-    [Yy]) declare -g "$var_name=true" ;;
-    *) declare -g "$var_name=false" ;;
-  esac
+  if [[ $response =~ ^[Yy]$ ]]; then
+    eval "$var_name=true"
+  else
+    eval "$var_name=false"
+  fi
 }
 
 install_packages() {
@@ -25,12 +24,6 @@ install_packages() {
   if [ ${#packages[@]} -ne 0 ]; then
     sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
-}
-
-download_and_install() {
-  local url="$1"
-  local dest="$2"
-  wget -q "$url" -O "$dest" && tar xf "$dest"
 }
 
 install_cachyos=false
@@ -44,7 +37,7 @@ install_dolphin=false
 install_gnome_tweaks=false
 
 clear
-echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
+echo -e "${blue}Welcome to the Arch Linux post installation script!${reset}"
 
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
@@ -82,14 +75,6 @@ if $install_chaotic; then
   sudo pacman -Sy
 fi
 
-if $install_kernel_manager; then
-  sudo pacman -S --noconfirm cachyos-kernel-manager
-fi
-
-if $install_gaming_meta; then
-  sudo pacman -S --noconfirm cachyos-gaming-meta
-fi
-
 if $install_open_nvidia_driver; then
   sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
@@ -117,7 +102,28 @@ fi
 
 if $install_recommended_software; then
   install_packages yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
-  sudo systemctl enable --now ufw bluetooth preload
+fi
+
+make_system_more_stable() {
+  sudo pacman -Syuu --noconfirm
+  wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
+  tar xvf cachyos-repo.tar.xz &&
+  cd cachyos-repo &&
+  sudo ./cachyos-repo.sh &&
+  cd .. &&
+  rm -rf cachyos-repo cachyos-repo.tar.xz
+}
+
+make_system_more_stable
+
+disable_useless_repos() {
+  sudo sed -i 's/^core$/#core/' /etc/pacman.conf
+  sudo sed -i 's/^Include = \/etc\/pacman.d\/core\.mirrorlist$/#Include = \/etc\/pacman.d\/core\.mirrorlist/' /etc/pacman.conf
+  sudo pacman -Sy
+}
+
+if $install_cachyos || $install_chaotic; then
+  disable_useless_repos
 fi
 
 exit 0
