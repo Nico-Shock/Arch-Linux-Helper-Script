@@ -22,7 +22,6 @@ ask_user() {
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
-    echo -e "The following packages will be installed: ${packages[*]}"
     sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
 }
@@ -55,10 +54,7 @@ elif [[ $desktop_env =~ ^[Gg]$ ]]; then
   ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 fi
 
-echo -e "${blue}Starting installation based on your responses...${reset}"
-
 if $install_cachyos; then
-  echo -e "Adding CachyOS repository..."
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
   cd cachyos-repo &&
