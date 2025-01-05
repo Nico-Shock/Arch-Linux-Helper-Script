@@ -48,18 +48,12 @@ ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
 ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 ask_user "Do you want to install Nvidia open drivers?" install_open_nvidia_driver
-ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
+
+if ! $install_open_nvidia_driver; then
+  ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
+fi
+
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
-
-echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
-read -r -n 1 desktop_env
-echo ""
-
-while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
-  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
-  read -r -n 1 desktop_env
-  echo ""
-done
 
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
@@ -148,8 +142,8 @@ disable_useless_repos() {
 
 if $install_cachyos || $install_chaotic; then
   disable_useless_repos
-  
 fi
+
 cleanup_temp_files() {
   sudo pacman -Scc --noconfirm
 }
