@@ -1,6 +1,5 @@
 #!/bin/bash
 
-green="\e[32m"
 red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
@@ -23,7 +22,7 @@ ask_user() {
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
-    echo -e "${green}The following packages will be installed: ${packages[*]}${reset}"
+    echo -e "The following packages will be installed: ${packages[*]}"
     sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
 }
@@ -43,7 +42,7 @@ echo -e "${blue}Welcome to the Arch Linux post installation script${reset}"
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
-ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Games Launcher, Wine – idk the exact package names)" install_gaming_meta
+ask_user "Do you want to install the CachyOS Gaming Meta (Proton, Steam, Lutris, Heroic Games Launcher, Wine – idk the exact package names, sorry)" install_gaming_meta
 ask_user "Do you want to install Nvidia open drivers (linux-cachyos-nvidia-open, libglvnd, nvidia-utils, opencl-nvidia, lib32-libglvnd, lib32-nvidia-utils, lib32-opencl-nvidia, nvidia-settings)?" install_nvidia_drivers
 ask_user "Do you want to install recommended software (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)?" install_recommended_software
 
@@ -59,7 +58,7 @@ fi
 echo -e "${blue}Starting installation based on your responses...${reset}"
 
 if $install_cachyos; then
-  echo -e "${green}Adding CachyOS repository...${reset}"
+  echo -e "Adding CachyOS repository..."
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
   cd cachyos-repo &&
@@ -70,7 +69,7 @@ if $install_cachyos; then
 fi
 
 if $install_chaotic; then
-  echo -e "${green}Adding Chaotic-AUR repository...${reset}"
+  echo -e "Adding Chaotic-AUR repository..."
   sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com &&
   sudo pacman-key --lsign-key 3056513887B78AEB &&
   sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
@@ -80,28 +79,28 @@ if $install_chaotic; then
 fi
 
 if $install_kernel_manager; then
-  echo -e "${green}Installing CachyOS Kernel Manager...${reset}"
+  echo -e "Installing CachyOS Kernel Manager..."
 fi
 
 if $install_gaming_meta; then
-  echo -e "${green}Installing CachyOS Gaming Meta...${reset}"
+  echo -e "Installing CachyOS Gaming Meta..."
 fi
 
 if $install_nvidia_drivers; then
-  echo -e "${green}Installing NVIDIA open drivers...${reset}"
+  echo -e "Installing NVIDIA open drivers..."
 fi
 
 if $install_recommended_software; then
-  echo -e "${green}Installing recommended software...${reset}"
+  echo -e "Installing recommended software..."
 fi
 
 if $install_dolphin; then
-  echo -e "${green}Installing Dolphin...${reset}"
+  echo -e "Installing Dolphin..."
 fi
 
 if $install_gnome_tweaks; then
-  echo -e "${green}Installing Gnome Tweaks...${reset}"
+  echo -e "Installing Gnome Tweaks..."
 fi
 
-echo -e "${green}Script completed.${reset}"
+echo -e "Script completed."
 exit 0
