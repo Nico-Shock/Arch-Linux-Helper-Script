@@ -78,29 +78,5 @@ if $install_chaotic; then
   sudo pacman -Sy
 fi
 
-if $install_kernel_manager; then
-  echo -e "Installing CachyOS Kernel Manager..."
-fi
-
-if $install_gaming_meta; then
-  echo -e "Installing CachyOS Gaming Meta..."
-fi
-
-if $install_nvidia_drivers; then
-  echo -e "Installing NVIDIA open drivers..."
-fi
-
-if $install_recommended_software; then
-  echo -e "Installing recommended software..."
-fi
-
-if $install_dolphin; then
-  echo -e "Installing Dolphin..."
-fi
-
-if $install_gnome_tweaks; then
-  echo -e "Installing Gnome Tweaks..."
-fi
-
 echo -e "Script completed."
 exit 0
