@@ -24,7 +24,7 @@ ask_user() {
       eval "$var_name=false"
       break
     else
-      echo -e "${blue}Invalid input. Please try again.[y/n]:${reset}"
+      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[y/n]:${reset}"
     fi
   done
 }
@@ -85,6 +85,7 @@ if $install_cachyos; then
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
   sudo pacman -S --noconfirm cachyos-settings
+  yay -S pacman
 fi
 
 if $install_chaotic; then
@@ -145,16 +146,6 @@ make_system_more_stable() {
 }
 
 make_system_more_stable
-
-disable_useless_repos() {
-  sudo sed -i 's/^core$/#core/' /etc/pacman.conf
-  sudo sed -i 's/^Include = \/etc\/pacman.d\/core\.mirrorlist$/#Include = \/etc\/pacman.d\/core\.mirrorlist/' /etc/pacman.conf
-  sudo pacman -Sy
-}
-
-if $install_cachyos || $install_chaotic; then
-  disable_useless_repos
-fi
 
 cleanup_temp_files() {
   sudo pacman -Scc --noconfirm
