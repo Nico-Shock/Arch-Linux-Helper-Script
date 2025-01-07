@@ -4,9 +4,9 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
-trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
-
 # btw the thinks i want to add is so hard fow me now i use more ChatGPT for this so maybe some wierd changes will come
+
+trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
 set -e
 
