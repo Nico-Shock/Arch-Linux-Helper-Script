@@ -55,6 +55,74 @@ ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_man
 ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 ask_user "Do you want to install Nvidia open drivers?" install_open_nvidia_driver
 
+install_kernel() {
+  while true; do
+    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+    echo -e "1. linux-cachyos"
+    echo -e "2. linux-cachyos-rc"
+    echo -e "3. linux-vfio"
+    read -r -n 1 kernel_choice
+    echo ""
+
+    case $kernel_choice in
+      1)
+        sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+        break
+        ;;
+      2)
+        sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+        break
+        ;;
+      3)
+        sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
+        break
+        ;;
+      *)
+        echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN. CHOOSE 1, 2, or 3."
+        ;;
+    esac
+  done
+}
+
+ask_bootloader() {
+  echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemd is supported for now):"
+  echo -e "2. systemd-boot"
+  echo -e "3. Do nothing (You will need to manually edit your bootloader configuration)"
+  
+  read -r -n 1 bootloader_choice
+  echo ""
+
+  case $bootloader_choice in
+    2)
+      echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
+      lsblk
+      ask_user "Please choose your right partition (root partition) Example: /dev/nvme0n1p3" root_partition
+      ask_user "ARE YOU SURE YOUR INPUT IS CORRECT? A MISTAKE WILL PREVENT YOUR SYSTEM FROM BOOTING UNLESS YOU EDIT THE BOOTLOADER CONFIG MANUALLY?" sure_partition
+      if $sure_partition; then
+        ask_user "SHOULD I CREATE A 'arch.conf' IN '/boot/loader/entries' AND DELETE ALL OTHER BOOT ENTRIES?" create_arch_conf
+        if $create_arch_conf; then
+          sudo rm -r /boot/loader/entries
+          sudo mkdir -p /boot/loader/entries
+          case $kernel_choice in
+            1) kernel="linux-cachyos" ;;
+            2) kernel="linux-cachyos-rc" ;;
+            3) kernel="linux-vfio" ;;
+            *) kernel="linux-cachyos" ;;
+          esac
+          echo -e "title Arch Linux\nlinux /vmlinuz-$kernel\ninitrd /initramfs-$kernel.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+        fi
+      fi
+      ;;
+    3)
+      echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
+      ;;
+    *)
+      echo -e "Invalid selection. Exiting."
+      exit 1
+      ;;
+  esac
+}
+
 if ! $install_open_nvidia_driver; then
   ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
 fi
@@ -134,74 +202,6 @@ if $install_recommended_software; then
   install_packages yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
   sudo systemctl enable --now ufw bluetooth preload
 fi
-
-install_kernel() {
-  while true; do
-    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
-    echo -e "1. linux-cachyos"
-    echo -e "2. linux-cachyos-rc"
-    echo -e "3. linux-vfio"
-    read -r -n 1 kernel_choice
-    echo ""
-
-    case $kernel_choice in
-      1)
-        sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
-        break
-        ;;
-      2)
-        sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
-        break
-        ;;
-      3)
-        sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
-        break
-        ;;
-      *)
-        echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN. CHOOSE 1, 2, or 3."
-        ;;
-    esac
-  done
-}
-
-ask_bootloader() {
-  echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemd is supported for now):"
-  echo -e "2. systemd-boot"
-  echo -e "3. Do nothing (You will need to manually edit your bootloader configuration)"
-  
-  read -r -n 1 bootloader_choice
-  echo ""
-
-  case $bootloader_choice in
-    2)
-      echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
-      lsblk
-      ask_user "Please choose your right partition (root partition) Example: /dev/nvme0n1p3" root_partition
-      ask_user "ARE YOU SURE YOUR INPUT IS CORRECT? A MISTAKE WILL PREVENT YOUR SYSTEM FROM BOOTING UNLESS YOU EDIT THE BOOTLOADER CONFIG MANUALLY?" sure_partition
-      if $sure_partition; then
-        ask_user "SHOULD I CREATE A 'arch.conf' IN '/boot/loader/entries' AND DELETE ALL OTHER BOOT ENTRIES?" create_arch_conf
-        if $create_arch_conf; then
-          sudo rm -r /boot/loader/entries
-          sudo mkdir -p /boot/loader/entries
-          case $kernel_choice in
-            1) kernel="linux-cachyos" ;;
-            2) kernel="linux-cachyos-rc" ;;
-            3) kernel="linux-vfio" ;;
-            *) kernel="linux-cachyos" ;;
-          esac
-          echo -e "title Arch Linux\nlinux /vmlinuz-$kernel\ninitrd /initramfs-$kernel.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
-        fi
-      fi
-      ;;
-    3)
-      echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
-      ;;
-    *)
-      echo -e "Invalid selection. Exiting."
-      exit 1
-      ;;
-  esac
-}
 
 make_system_more_stable() {
   sudo pacman -Syuu --noconfirm
