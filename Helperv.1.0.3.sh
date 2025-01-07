@@ -62,7 +62,7 @@ if ! $install_open_nvidia_driver; then
   ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
 fi
 
-ask_user "Do you want to install a new kernel?" install_new_kernel
+ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
 install_kernel() {
   while true; do
@@ -113,12 +113,20 @@ ask_bootloader() {
           sudo rm -r /boot/loader/entries
           sudo mkdir -p /boot/loader/entries
           case $kernel_choice in
-            1) kernel="linux-cachyos" ;;
-            2) kernel="linux-cachyos-rc" ;;
-            3) kernel="linux-vfio" ;;
-            *) kernel="linux-cachyos" ;;
+            1) 
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos\ninitrd /initramfs-linux-cachyos.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              ;;
+            2)
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos-rc\ninitrd /initramfs-linux-cachyos-rc.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              ;;
+            3)
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              ;;
+            *)
+              echo -e "Invalid kernel choice."
+              exit 1
+              ;;
           esac
-          echo -e "title Arch Linux\nlinux /vmlinuz-$kernel\ninitrd /initramfs-$kernel.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
         fi
       fi
       ;;
@@ -189,9 +197,7 @@ fi
 
 if $install_closed_nvidia_dkms_driver; then
   sudo pacman -S --needed --noconfirm nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings linux-headers
-
   sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
-
   sudo mkdir -p /etc/pacman.d/hooks
   sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
 [Trigger]
