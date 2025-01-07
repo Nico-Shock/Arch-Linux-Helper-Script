@@ -55,7 +55,6 @@ if ! $install_open_nvidia_driver; then
   ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
 fi
 
-# Kernel and Bootloader setup moved here
 install_kernel() {
   while true; do
     echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
