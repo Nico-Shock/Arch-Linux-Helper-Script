@@ -48,11 +48,6 @@ install_recommended_software=false
 install_dolphin=false
 install_gnome_tweaks=false
 install_new_kernel=false
-desktop_env=""
-kernel_choice=""
-root_partition=""
-sure_partition=false
-create_arch_conf=false
 
 clear
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
@@ -69,48 +64,33 @@ fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
-echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
-read -r -n 1 desktop_env
-echo ""
+kernel_choice=0
 
-while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
-  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
-  read -r -n 1 desktop_env
+if $install_new_kernel; then
+  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+  echo -e "1. linux-cachyos"
+  echo -e "2. linux-cachyos-rc"
+  echo -e "3. linux-vfio"
+  read -r -n 1 kernel_choice
   echo ""
-done
-
-if [[ $desktop_env =~ ^[Kk]$ ]]; then
-  ask_user "Do you want to install Dolphin?" install_dolphin
-elif [[ $desktop_env =~ ^[Gg]$ ]]; then
-  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 fi
 
-ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
-
 install_kernel() {
-  while true; do
-    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
-    echo -e "1. linux-cachyos"
-    echo -e "2. linux-cachyos-rc"
-    echo -e "3. linux-vfio"
-    read -r -n 1 kernel_choice
-    echo ""
-
-    case $kernel_choice in
-      1)
-        break
-        ;;
-      2)
-        break
-        ;;
-      3)
-        break
-        ;;
-      *)
-        echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
-        ;;
-    esac
-  done
+  case $kernel_choice in
+    1)
+      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+      ;;
+    2)
+      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+      ;;
+    3)
+      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
+      ;;
+    *)
+      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
+      exit 1
+      ;;
+  esac
 }
 
 ask_bootloader() {
@@ -163,6 +143,24 @@ ask_bootloader() {
 if $install_new_kernel; then
   install_kernel
   ask_bootloader
+fi
+
+ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
+
+echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
+read -r -n 1 desktop_env
+echo ""
+
+while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
+  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  read -r -n 1 desktop_env
+  echo ""
+done
+
+if [[ $desktop_env =~ ^[Kk]$ ]]; then
+  ask_user "Do you want to install Dolphin?" install_dolphin
+elif [[ $desktop_env =~ ^[Gg]$ ]]; then
+  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 fi
 
 if $install_cachyos; then
@@ -238,5 +236,4 @@ cleanup_temp_files() {
 }
 
 cleanup_temp_files
-
 exit 0
