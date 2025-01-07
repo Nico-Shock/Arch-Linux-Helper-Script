@@ -4,9 +4,9 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
-# btw the thinks i want to add is so hard fow me now i use more ChatGPT for this so maybe some wierd changes will come
-
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
+
+# btw the thinks i want to add is so hard fow me now i use more ChatGPT for this so maybe some wierd changes will come
 
 set -e
 
@@ -87,28 +87,28 @@ install_kernel() {
         break
         ;;
       *)
-        echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN. CHOOSE 1, 2, or 3."
+        echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
         ;;
     esac
   done
 }
 
 ask_bootloader() {
-  echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemd is supported for now):"
-  echo -e "2. systemd-boot"
-  echo -e "3. Do nothing (You will need to manually edit your bootloader configuration)"
+  echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemdboot is supported for now):"
+  echo -e "1. systemdboot"
+  echo -e "2. Do nothing (You will need to manually edit your bootloader configuration)"
   
   read -r -n 1 bootloader_choice
   echo ""
 
   case $bootloader_choice in
-    2)
+    1)
       echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
       lsblk
-      ask_user "Please choose your right partition (root partition) Example: /dev/nvme0n1p3" root_partition
+      ask_user "PLEASE CHOOSE YOUR CORRECT PARTITION (ROOT PARTITION). EXAMPLE: /DEV/NVME0N1P3" root_partition
       ask_user "ARE YOU SURE YOUR INPUT IS CORRECT? A MISTAKE WILL PREVENT YOUR SYSTEM FROM BOOTING UNLESS YOU EDIT THE BOOTLOADER CONFIG MANUALLY?" sure_partition
       if $sure_partition; then
-        ask_user "SHOULD I CREATE A 'arch.conf' IN '/boot/loader/entries' AND DELETE ALL OTHER BOOT ENTRIES?" create_arch_conf
+        ask_user "SHOULD I CREATE A 'ARCH.CONF' IN '/BOOT/LOADER/ENTRIES' AND DELETE ALL OTHER BOOT ENTRIES?" create_arch_conf
         if $create_arch_conf; then
           sudo rm -r /boot/loader/entries
           sudo mkdir -p /boot/loader/entries
@@ -123,18 +123,18 @@ ask_bootloader() {
               echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
               ;;
             *)
-              echo -e "Invalid kernel choice."
+              echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE THE RIGHT KERNEL."
               exit 1
               ;;
           esac
         fi
       fi
       ;;
-    3)
+    2)
       echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
       ;;
     *)
-      echo -e "Invalid selection. Exiting."
+      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
       exit 1
       ;;
   esac
