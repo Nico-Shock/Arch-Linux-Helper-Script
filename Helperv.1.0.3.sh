@@ -77,33 +77,7 @@ fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
-if $install_new_kernel; then
-  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
-  echo -e "1. linux-cachyos"
-  echo -e "2. linux-cachyos-rc"
-  echo -e "3. linux-vfio"
-  read -r -n 1 kernel_choice
-  echo ""
-  
-  case $kernel_choice in
-    1)
-      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
-      ;;
-
-    2)
-      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
-      ;;
-
-    3)
-      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
-      ;;
-
-    *)
-      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
-      exit 1
-      ;;
-  esac
-fi
+kernel_choice=0
 
 ask_bootloader() {
   echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemdboot is supported for now):"
@@ -137,10 +111,7 @@ ask_bootloader() {
               echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img" | sudo tee /boot/loader/entries/arch.conf
               echo "options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee -a /boot/loader/entries/arch.conf
               ;;
-            *)
-              echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE THE RIGHT KERNEL."
-              exit 1
-              ;;
+
           esac
         fi
       fi
@@ -154,8 +125,44 @@ ask_bootloader() {
       echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
       exit 1
       ;;
+
   esac
 }
+
+if $install_new_kernel; then
+  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+  echo -e "1. linux-cachyos"
+  echo -e "2. linux-cachyos-rc"
+  echo -e "3. linux-vfio"
+  read -r -n 1 kernel_choice
+  echo ""
+fi
+
+if $install_new_kernel; then
+  install_kernel() {
+    case $kernel_choice in
+      1)
+        sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+        ;;
+
+      2)
+        sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+        ;;
+
+      3)
+        sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
+        ;;
+
+      *)
+        echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
+        exit 1
+        ;;
+
+    esac
+  }
+  install_kernel
+  ask_bootloader
+fi
 
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
 
