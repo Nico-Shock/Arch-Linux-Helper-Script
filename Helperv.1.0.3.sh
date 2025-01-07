@@ -49,12 +49,13 @@ install_gnome_tweaks=false
 clear
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
 
-ask_user "Do you want to install the CachyOS repos?" install_cachyos
-ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
-ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
-ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 ask_user "Do you want to install Nvidia open drivers?" install_open_nvidia_driver
 
+if ! $install_open_nvidia_driver; then
+  ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
+fi
+
+# Kernel and Bootloader setup moved here
 install_kernel() {
   while true; do
     echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
@@ -123,10 +124,10 @@ ask_bootloader() {
   esac
 }
 
-if ! $install_open_nvidia_driver; then
-  ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
-fi
-
+ask_user "Do you want to install the CachyOS repos?" install_cachyos
+ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
+ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
+ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
 
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
@@ -211,7 +212,6 @@ make_system_more_stable() {
   sudo ./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz
-  sudo pacman -Sy --noconfirm
 }
 
 make_system_more_stable
