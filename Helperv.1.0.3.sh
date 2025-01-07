@@ -114,13 +114,16 @@ ask_bootloader() {
           sudo mkdir -p /boot/loader/entries
           case $kernel_choice in
             1) 
-              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos\ninitrd /initramfs-linux-cachyos.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos\ninitrd /initramfs-linux-cachyos.img" | sudo tee /boot/loader/entries/arch.conf
+              echo "options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee -a /boot/loader/entries/arch.conf
               ;;
             2)
-              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos-rc\ninitrd /initramfs-linux-cachyos-rc.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos-rc\ninitrd /initramfs-linux-cachyos-rc.img" | sudo tee /boot/loader/entries/arch.conf
+              echo "options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee -a /boot/loader/entries/arch.conf
               ;;
             3)
-              echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img" | sudo tee /boot/loader/entries/arch.conf
+              echo "options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee -a /boot/loader/entries/arch.conf
               ;;
             *)
               echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE THE RIGHT KERNEL."
