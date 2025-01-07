@@ -135,6 +135,35 @@ if $install_recommended_software; then
   sudo systemctl enable --now ufw bluetooth preload
 fi
 
+install_kernel() {
+  while true; do
+    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+    echo -e "1. linux-cachyos"
+    echo -e "2. linux-cachyos-rc"
+    echo -e "3. linux-vfio"
+    read -r -n 1 kernel_choice
+    echo ""
+
+    case $kernel_choice in
+      1)
+        sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+        break
+        ;;
+      2)
+        sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+        break
+        ;;
+      3)
+        sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
+        break
+        ;;
+      *)
+        echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN. CHOOSE 1, 2, or 3."
+        ;;
+    esac
+  done
+}
+
 make_system_more_stable() {
   sudo pacman -Syuu --noconfirm
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
