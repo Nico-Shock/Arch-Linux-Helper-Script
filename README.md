@@ -1,5 +1,7 @@
 # Perfect Helper Script for Post Setup After an Arch Installation
 
+### ""curl -L "https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.v.1.0.2.sh" -o /tmp/Helper.sh && chmod +x /tmp/Helper.sh && /tmp/Helper.sh**
+
 ## **What the Script Does**
 
 - **The script will automatically install the CachyOS repos to make your system more stable and make many things easier to install from the repo. Everything will be automated so you don’t need to edit anything.**
