@@ -4,6 +4,8 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
+# btw the thinks i want to add is so hard fow me now i use more ChatGPT for this so maybe some wierd changes will come
+
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
 set -e
@@ -88,24 +90,6 @@ if $install_new_kernel; then
   echo ""
 fi
 
-install_kernel() {
-  case $kernel_choice in
-    1)
-      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
-      ;;
-    2)
-      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
-      ;;
-    3)
-      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
-      ;;
-    *)
-      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
-      exit 1
-      ;;
-  esac
-}
-
 ask_bootloader() {
   echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemdboot is supported for now):"
   echo -e "1. systemdboot"
@@ -157,6 +141,23 @@ ask_bootloader() {
 }
 
 if $install_new_kernel; then
+  install_kernel() {
+    case $kernel_choice in
+      1)
+        sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+        ;;
+      2)
+        sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+        ;;
+      3)
+        sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
+        ;;
+      *)
+        echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
+        exit 1
+        ;;
+    esac
+  }
   install_kernel
   ask_bootloader
 fi
