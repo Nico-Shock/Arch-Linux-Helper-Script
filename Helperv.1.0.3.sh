@@ -4,6 +4,8 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
+# btw the thinks i want to add is so hard fow me now i use more ChatGPT for this so maybe some wierd changes will come
+
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
 set -e
@@ -46,10 +48,11 @@ install_recommended_software=false
 install_dolphin=false
 install_gnome_tweaks=false
 install_new_kernel=false
+desktop_env=""
+kernel_choice=""
 root_partition=""
 sure_partition=false
 create_arch_conf=false
-desktop_env=""
 
 clear
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
@@ -65,7 +68,7 @@ if ! $install_open_nvidia_driver; then
 fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
-ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
+
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
@@ -80,6 +83,86 @@ if [[ $desktop_env =~ ^[Kk]$ ]]; then
   ask_user "Do you want to install Dolphin?" install_dolphin
 elif [[ $desktop_env =~ ^[Gg]$ ]]; then
   ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
+fi
+
+ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
+
+install_kernel() {
+  while true; do
+    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+    echo -e "1. linux-cachyos"
+    echo -e "2. linux-cachyos-rc"
+    echo -e "3. linux-vfio"
+    read -r -n 1 kernel_choice
+    echo ""
+
+    case $kernel_choice in
+      1)
+        break
+        ;;
+      2)
+        break
+        ;;
+      3)
+        break
+        ;;
+      *)
+        echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
+        ;;
+    esac
+  done
+}
+
+ask_bootloader() {
+  echo -e "PLEASE SELECT YOUR BOOTLOADER OPTION (only systemdboot is supported for now):"
+  echo -e "1. systemdboot"
+  echo -e "2. Do nothing (You will need to manually edit your bootloader configuration)"
+  
+  read -r -n 1 bootloader_choice
+  echo ""
+
+  case $bootloader_choice in
+    1)
+      echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
+      lsblk
+      ask_user "PLEASE CHOOSE YOUR CORRECT PARTITION (ROOT PARTITION). EXAMPLE: /DEV/NVME0N1P3" root_partition
+      ask_user "ARE YOU SURE YOUR INPUT IS CORRECT? A MISTAKE WILL PREVENT YOUR SYSTEM FROM BOOTING UNLESS YOU EDIT THE BOOTLOADER CONFIG MANUALLY?" sure_partition
+      if $sure_partition; then
+        ask_user "SHOULD I CREATE A 'ARCH.CONF' IN '/BOOT/LOADER/ENTRIES' AND DELETE ALL OTHER BOOT ENTRIES?" create_arch_conf
+        if $create_arch_conf; then
+          sudo rm -r /boot/loader/entries
+          sudo mkdir -p /boot/loader/entries
+          case $kernel_choice in
+            1) 
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos\ninitrd /initramfs-linux-cachyos.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              ;;
+            2)
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-cachyos-rc\ninitrd /initramfs-linux-cachyos-rc.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              ;;
+            3)
+              echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img\noptions root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee /boot/loader/entries/arch.conf
+              ;;
+            *)
+              echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE THE RIGHT KERNEL."
+              exit 1
+              ;;
+          esac
+        fi
+      fi
+      ;;
+    2)
+      echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
+      ;;
+    *)
+      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
+      exit 1
+      ;;
+  esac
+}
+
+if $install_new_kernel; then
+  install_kernel
+  ask_bootloader
 fi
 
 if $install_cachyos; then
