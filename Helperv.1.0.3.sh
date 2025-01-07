@@ -113,7 +113,7 @@ ask_bootloader() {
               echo -e "title Arch Linux\nlinux /vmlinuz-linux-vfio\ninitrd /initramfs-linux-vfio.img" | sudo tee /boot/loader/entries/arch.conf
               echo "options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" | sudo tee -a /boot/loader/entries/arch.conf
               ;;
-               *)
+            *)
               echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE THE RIGHT KERNEL."
               exit 1
               ;;
