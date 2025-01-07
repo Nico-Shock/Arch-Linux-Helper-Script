@@ -4,8 +4,6 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
-# btw the thinks i want to add is so hard fow me now i use more ChatGPT for this so maybe some wierd changes will come
-
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 
 set -e
@@ -27,6 +25,21 @@ ask_user() {
       break
     else
       echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[y/n]:${reset}"
+    fi
+  done
+}
+
+ask_partition_input() {
+  local prompt="$1"
+  local var_name="$2"
+  while true; do
+    echo -e "${blue}${prompt}:${reset}"
+    read -r partition_input
+    if [ -b "$partition_input" ]; then
+      eval "$var_name=$partition_input"
+      break
+    else
+      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE TRY AGAIN.${reset}"
     fi
   done
 }
@@ -105,7 +118,7 @@ ask_bootloader() {
     1)
       echo -e "PLEASE EDIT YOUR BOOTLOADER CONFIGURATION TO BOOT FROM THE NEW INSTALLED KERNEL LATER"
       lsblk
-      ask_user "PLEASE CHOOSE YOUR CORRECT PARTITION (ROOT PARTITION). EXAMPLE: /DEV/NVME0N1P3" root_partition
+      ask_partition_input "PLEASE CHOOSE YOUR CORRECT PARTITION (ROOT PARTITION). EXAMPLE: /DEV/NVME0N1P3" root_partition
       ask_user "ARE YOU SURE YOUR INPUT IS CORRECT? A MISTAKE WILL PREVENT YOUR SYSTEM FROM BOOTING UNLESS YOU EDIT THE BOOTLOADER CONFIG MANUALLY?" sure_partition
       if $sure_partition; then
         ask_user "SHOULD I CREATE A 'ARCH.CONF' IN '/BOOT/LOADER/ENTRIES' AND DELETE ALL OTHER BOOT ENTRIES?" create_arch_conf
