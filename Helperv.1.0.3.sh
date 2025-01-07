@@ -221,7 +221,6 @@ make_system_more_stable() {
   sudo ./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz
-  sudo pacman -Sy --noconfirm
 }
 
 make_system_more_stable
