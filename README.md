@@ -1,7 +1,7 @@
 # Perfect Helper Script for Post Setup After an Arch Installation
 
 ### **You can run this command to execute the script directly:**
-`curl -L "https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.sh" | bash`
+`curl -L "https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.sh" -o /tmp/Helper.sh && chmod +x /tmp/Helper.sh && /tmp/Helper.sh && rm /tmp/Helper.sh`
 
 ## **What the Script Does**
 
