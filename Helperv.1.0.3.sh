@@ -46,7 +46,7 @@ ask_partition_input() {
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
-    sudo pacman -S --needed "${packages[@]}"
+    sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
 }
 
