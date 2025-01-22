@@ -112,7 +112,7 @@ if $install_cachyos; then
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
   cd cachyos-repo &&
-  sudo ./cachyos-repo.sh &&
+  sudo -- noconfirme./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
   sudo pacman -S --noconfirm cachyos-settings
@@ -159,7 +159,8 @@ EOF'
 fi
 
 if $install_recommended_software; then
-  install_packages yay ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
+  sudo pacman -Sy --noconfirm
+  sudo pacman -S --needed --noconfirm ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
   sudo systemctl enable --now ufw bluetooth preload
 fi
 
@@ -182,7 +183,7 @@ if $install_new_kernel; then
 fi
 
 cleanup_temp_files() {
-  sudo pacman -Scc --noconfirm
+  sudo pacman -Scc
 }
 
 cleanup_temp_files
