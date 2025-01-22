@@ -7,23 +7,47 @@ reset="\e[0m"
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 set -e
 
+response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
+
 ask_user() {
-  local prompt="$1" var_name="$2"
+  local prompt="$1"
+  local var_name="$2"
   while true; do
     echo -e "${blue}${prompt} [y/n]:${reset}"
     read -r -n 1 response
     echo ""
-    case "${response,,}" in
-      y) eval "$var_name=true"; break ;;
-      n) eval "$var_name=false"; break ;;
-      *) echo -e "${blue}INVALID INPUT. PLEASE TRY AGAIN. [y/n]:${reset}" ;;
-    esac
+    if [[ $response =~ ^[Yy]$ ]]; then
+      eval "$var_name=true"
+      break
+    elif [[ $response =~ ^[Nn]$ ]]; then
+      eval "$var_name=false"
+      break
+    else
+      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[y/n]:${reset}"
+    fi
+  done
+}
+
+ask_partition_input() {
+  local prompt="$1"
+  local var_name="$2"
+  while true; do
+    echo -e "${blue}${prompt}:${reset}"
+    read -r partition_input
+    if [ -b "$partition_input" ]; then
+      eval "$var_name=$partition_input"
+      break
+    else
+      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE TRY AGAIN.${reset}"
+    fi
   done
 }
 
 install_packages() {
   local packages=("$@")
-  [ ${#packages[@]} -gt 0 ] && sudo pacman -S --needed "${packages[@]}"
+  if [ ${#packages[@]} -ne 0 ]; then
+    sudo pacman -S --needed "${packages[@]}"
+  fi
 }
 
 install_cachyos=false
@@ -38,8 +62,11 @@ install_gnome_tweaks=false
 install_new_kernel=false
 
 clear
-sudo pacman -Syu
+sudo pacman -Syu --noconfirm
 clear
+
+clear
+echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
 
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
@@ -51,46 +78,24 @@ if ! $install_open_nvidia_driver; then
   ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
 fi
 
+ask_user "Do you want to install a new linux kernel?" install_new_kernel
+
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
 
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
 
-while [[ ! "$desktop_env" =~ ^[kgnKGN]$ ]]; do
-  echo -e "${blue}INVALID INPUT. PLEASE TRY AGAIN. [k/g/n]:${reset}"
+while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
+  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
   read -r -n 1 desktop_env
   echo ""
 done
 
-[[ $desktop_env =~ [kK] ]] && ask_user "Do you want to install Dolphin?" install_dolphin
-[[ $desktop_env =~ [gG] ]] && ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
-
-ask_user "Do you want to install a new linux kernel?" install_new_kernel
-
-if $install_new_kernel; then
-  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
-  echo -e "1. linux-cachyos"
-  echo -e "2. linux-cachyos-rc"
-  echo -e "3. linux-vfio"
-  read -r -n 1 kernel_choice
-  echo ""
-
-  case $kernel_choice in
-    1)
-      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
-      ;;
-    2)
-      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
-      ;;
-    3)
-      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
-      ;;
-    *)
-      echo -e "${blue}INVALID INPUT. PLEASE TRY AGAIN. [1/2/3]:${reset}"
-      exit 1
-      ;;
-  esac
+if [[ $desktop_env =~ ^[Kk]$ ]]; then
+  ask_user "Do you want to install Dolphin?" install_dolphin
+elif [[ $desktop_env =~ ^[Gg]$ ]]; then
+  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 fi
 
 if $install_cachyos; then
@@ -121,11 +126,11 @@ if $install_gaming_meta; then
 fi
 
 if $install_open_nvidia_driver; then
-  sudo pacman -S linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  sudo pacman -S --needed linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings linux-headers
+  sudo pacman -S --needed nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings linux-headers
   sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
   sudo mkdir -p /etc/pacman.d/hooks
   sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
@@ -148,5 +153,34 @@ if $install_recommended_software; then
   sudo systemctl enable --now ufw bluetooth preload
 fi
 
-sudo pacman -Scc
+if $install_new_kernel; then
+  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+  echo -e "1. linux-cachyos"
+  echo -e "2. linux-cachyos-rc"
+  echo -e "3. linux-vfio"
+  read -r -n 1 kernel_choice
+  echo ""
+  
+  case $kernel_choice in
+    1)
+      sudo pacman -S linux-cachyos linux-cachyos-headers
+      ;;
+    2)
+      sudo pacman -S linux-cachyos-rc linux-cachyos-rc-headers
+      ;;
+    3)
+      sudo pacman -S linux-vfio linux-vfio-headers
+      ;;
+    *)
+      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
+      exit 1
+      ;;
+  esac
+fi
+
+cleanup_temp_files() {
+  sudo pacman -Scc
+}
+
+cleanup_temp_files
 exit 0
