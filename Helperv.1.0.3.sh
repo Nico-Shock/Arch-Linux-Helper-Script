@@ -140,7 +140,7 @@ if $install_open_nvidia_driver; then
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S --needed nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings linux-headers
+  sudo pacman -S --needed linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
   sudo mkdir -p /etc/pacman.d/hooks
   sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
