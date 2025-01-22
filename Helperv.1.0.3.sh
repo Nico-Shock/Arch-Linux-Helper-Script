@@ -16,14 +16,14 @@ ask_user() {
     case "${response,,}" in
       y) eval "$var_name=true"; break ;;
       n) eval "$var_name=false"; break ;;
-      *) echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN. [y/n]:${reset}" ;;
+      *) echo -e "${blue}INVALID INPUT. PLEASE TRY AGAIN. [y/n]:${reset}" ;;
     esac
   done
 }
 
 install_packages() {
   local packages=("$@")
-  [ ${#packages[@]} -gt 0 ] && sudo pacman -S --needed --noconfirm "${packages[@]}"
+  [ ${#packages[@]} -gt 0 ] && sudo pacman -S --needed "${packages[@]}"
 }
 
 install_cachyos=false
@@ -38,7 +38,8 @@ install_gnome_tweaks=false
 install_new_kernel=false
 
 clear
-echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
+sudo pacman -Syu
+clear
 
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
@@ -57,7 +58,7 @@ read -r -n 1 desktop_env
 echo ""
 
 while [[ ! "$desktop_env" =~ ^[kgnKGN]$ ]]; do
-  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  echo -e "${blue}INVALID INPUT. PLEASE TRY AGAIN. [k/g/n]:${reset}"
   read -r -n 1 desktop_env
   echo ""
 done
@@ -72,32 +73,32 @@ if $install_cachyos; then
   sudo ./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
-  sudo pacman -S --noconfirm cachyos-settings
+  sudo pacman -S cachyos-settings
 fi
 
 if $install_chaotic; then
   sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com &&
   sudo pacman-key --lsign-key 3056513887B78AEB &&
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
+  sudo pacman -U https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
+  sudo pacman -U https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
   grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf &&
   sudo pacman -Sy
 fi
 
 if $install_kernel_manager; then
-  sudo pacman -S --noconfirm cachyos-kernel-manager
+  sudo pacman -S cachyos-kernel-manager
 fi
 
 if $install_gaming_meta; then
-  sudo pacman -S --noconfirm cachyos-gaming-meta
+  sudo pacman -S cachyos-gaming-meta
 fi
 
 if $install_open_nvidia_driver; then
-  sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  sudo pacman -S linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S --needed --noconfirm nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings linux-headers
+  sudo pacman -S nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings linux-headers
   sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
   sudo mkdir -p /etc/pacman.d/hooks
   sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
@@ -120,5 +121,5 @@ if $install_recommended_software; then
   sudo systemctl enable --now ufw bluetooth preload
 fi
 
-sudo pacman -Scc --noconfirm
+sudo pacman -Scc
 exit 0
