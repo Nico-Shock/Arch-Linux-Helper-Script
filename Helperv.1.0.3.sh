@@ -66,6 +66,33 @@ done
 [[ $desktop_env =~ [kK] ]] && ask_user "Do you want to install Dolphin?" install_dolphin
 [[ $desktop_env =~ [gG] ]] && ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 
+ask_user "Do you want to install a new linux kernel?" install_new_kernel
+
+if $install_new_kernel; then
+  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+  echo -e "1. linux-cachyos"
+  echo -e "2. linux-cachyos-rc"
+  echo -e "3. linux-vfio"
+  read -r -n 1 kernel_choice
+  echo ""
+
+  case $kernel_choice in
+    1)
+      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+      ;;
+    2)
+      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+      ;;
+    3)
+      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
+      ;;
+    *)
+      echo -e "${blue}INVALID INPUT. PLEASE TRY AGAIN. [1/2/3]:${reset}"
+      exit 1
+      ;;
+  esac
+fi
+
 if $install_cachyos; then
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
