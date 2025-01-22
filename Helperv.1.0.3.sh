@@ -115,32 +115,32 @@ if $install_cachyos; then
   sudo ./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
-  sudo pacman -S cachyos-settings
+  sudo pacman -S --noconfirm cachyos-settings
 fi
 
 if $install_chaotic; then
   sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com &&
   sudo pacman-key --lsign-key 3056513887B78AEB &&
-  sudo pacman -U https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
-  sudo pacman -U https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
+  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
+  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
   grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf &&
-  sudo pacman -Sy
+  sudo pacman -Sy --noconfirm
 fi
 
 if $install_kernel_manager; then
-  sudo pacman -S cachyos-kernel-manager
+  sudo pacman -S --noconfirm cachyos-kernel-manager
 fi
 
 if $install_gaming_meta; then
-  sudo pacman -S cachyos-gaming-meta
+  sudo pacman -S --noconfirm cachyos-gaming-meta
 fi
 
 if $install_open_nvidia_driver; then
-  sudo pacman -S --needed linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S --needed linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
   sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
   sudo mkdir -p /etc/pacman.d/hooks
   sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
@@ -166,13 +166,13 @@ fi
 if $install_new_kernel; then
   case $kernel_choice in
     1)
-      sudo pacman -S linux-cachyos linux-cachyos-headers
+      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
       ;;
     2)
-      sudo pacman -S linux-cachyos-rc linux-cachyos-rc-headers
+      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     3)
-      sudo pacman -S linux-vfio linux-vfio-headers
+      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
       ;;
     *)
       echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
@@ -182,7 +182,7 @@ if $install_new_kernel; then
 fi
 
 cleanup_temp_files() {
-  sudo pacman -Scc
+  sudo pacman -Scc --noconfirm
 }
 
 cleanup_temp_files
