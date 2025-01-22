@@ -76,7 +76,7 @@ ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 ask_user "Do you want to install Nvidia open drivers?" install_open_nvidia_driver
 
 if ! $install_open_nvidia_driver; then
-  ask_user "Do you want to install Nvidia closed source drivers?" install_closed_nvidia_dkms_driver
+  ask_user "Do you want to install Nvidia closed dkms drivers?" install_closed_nvidia_dkms_driver
 fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
@@ -90,7 +90,7 @@ if $install_new_kernel; then
   echo ""
 fi
 
-ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
+ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald,)" install_recommended_software
 
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
@@ -106,6 +106,12 @@ if [[ $desktop_env =~ ^[Kk]$ ]]; then
   ask_user "Do you want to install Dolphin?" install_dolphin
 elif [[ $desktop_env =~ ^[Gg]$ ]]; then
   ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
+fi
+
+ask_user "Patch Pacman (CachyOS Pacman)?" patch_pacman
+
+if $patch_pacman; then
+  sudo pacman -S --noconfirm pacman
 fi
 
 if $install_cachyos; then
@@ -183,7 +189,8 @@ if $install_new_kernel; then
 fi
 
 cleanup_temp_files() {
-  sudo pacman -Scc
+  sudo pacman -Scc --noconfirm
+  sudo rm -rf /tmp/*
 }
 
 cleanup_temp_files
