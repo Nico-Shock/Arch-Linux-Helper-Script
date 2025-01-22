@@ -60,6 +60,7 @@ install_recommended_software=false
 install_dolphin=false
 install_gnome_tweaks=false
 install_new_kernel=false
+kernel_choice=""
 
 clear
 sudo pacman -Syu --noconfirm
@@ -79,6 +80,15 @@ if ! $install_open_nvidia_driver; then
 fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
+
+if $install_new_kernel; then
+  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
+  echo -e "1. linux-cachyos"
+  echo -e "2. linux-cachyos-rc"
+  echo -e "3. linux-vfio"
+  read -r -n 1 kernel_choice
+  echo ""
+fi
 
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
 
@@ -154,13 +164,6 @@ if $install_recommended_software; then
 fi
 
 if $install_new_kernel; then
-  echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
-  echo -e "1. linux-cachyos"
-  echo -e "2. linux-cachyos-rc"
-  echo -e "3. linux-vfio"
-  read -r -n 1 kernel_choice
-  echo ""
-  
   case $kernel_choice in
     1)
       sudo pacman -S linux-cachyos linux-cachyos-headers
