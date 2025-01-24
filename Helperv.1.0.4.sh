@@ -8,7 +8,39 @@ red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
 
+exec > >(tee -a /var/log/cachyos_install.log) 2>&1
+
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
+
+if [ "$EUID" -ne 0 ]; then
+  echo -e "${red}Please run this script as root.${reset}"
+  exit 1
+fi
+
+configure_parallel_downloads() {
+  echo -e "${blue}Do you want to enable parallel downloads for pacman? [y/n]:${reset}"
+  read -r -n 1 enable_parallel
+  echo ""
+  if [[ $enable_parallel =~ ^[Yy]$ ]]; then
+    while true; do
+      echo -e "${blue}Enter the number of parallel downloads (5-20):${reset}"
+      read -r parallel_count
+      if [[ $parallel_count =~ ^[0-9]+$ ]] && [ "$parallel_count" -ge 5 ] && [ "$parallel_count" -le 20 ]; then
+        break
+      else
+        echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[5-20]:${reset}"
+      fi
+    done
+
+    if grep -q "^#ParallelDownloads" /etc/pacman.conf; then
+      sudo sed -i "s/^#ParallelDownloads/ParallelDownloads = $parallel_count/" /etc/pacman.conf
+    elif grep -q "^ParallelDownloads" /etc/pacman.conf; then
+      sudo sed -i "s/^ParallelDownloads.*/ParallelDownloads = $parallel_count/" /etc/pacman.conf
+    else
+      echo "ParallelDownloads = $parallel_count" | sudo tee -a /etc/pacman.conf
+    fi
+  fi
+}
 
 ask_user() {
   local prompt="$1"
@@ -32,6 +64,7 @@ ask_user() {
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
+    echo -e "${blue}Installing: ${packages[*]}${reset}"
     sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
 }
@@ -49,6 +82,8 @@ install_new_kernel=false
 kernel_choice=""
 
 clear
+configure_parallel_downloads
+echo -e "${blue}Updating system...${reset}"
 sudo pacman -Syu --noconfirm
 clear
 
