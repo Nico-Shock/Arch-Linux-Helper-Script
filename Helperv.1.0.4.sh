@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# THIS SCRIPT WAS EDITED BY DEEPSEEK AI TO IMPROVE THE SCRIPT FASTER TO ITS FINAL VERSION
+
 set -euo pipefail
 
 red="\e[31m"
@@ -34,7 +36,7 @@ install_packages() {
   fi
 }
 
-install_cachyos=false
+install_cachyos_repos=false
 install_chaotic=false
 install_kernel_manager=false
 install_gaming_meta=false
@@ -52,7 +54,7 @@ clear
 
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
 
-ask_user "Do you want to install the CachyOS repos?" install_cachyos
+ask_user "Do you want to install the CachyOS repos?" install_cachyos_repos
 ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
 ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
@@ -97,7 +99,7 @@ if $patch_pacman; then
   install_packages pacman
 fi
 
-if $install_cachyos; then
+if $install_cachyos_repos; then
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz
   tar xvf cachyos-repo.tar.xz
   cd cachyos-repo
