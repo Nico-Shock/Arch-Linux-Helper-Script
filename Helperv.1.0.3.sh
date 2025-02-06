@@ -5,15 +5,7 @@ blue="\e[34m"
 reset="\e[0m"
 
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
-
-error_prompt() {
-  echo -e "${red}DUDE THE FUCKING SCRIPT MADE A FUCKING ERROR DO YOU STILL WANT TO CONTINUE? [y/n]${reset}"
-  read -r -n 1 ans
-  echo ""
-  if [[ $ans =~ ^[Nn]$ ]]; then
-    exit 1
-  fi
-}
+set -e
 
 ask_user() {
   local prompt="$1"
@@ -37,7 +29,7 @@ ask_user() {
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
-    sudo pacman -S --needed --noconfirm "${packages[@]}" || error_prompt
+    sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
 }
 
@@ -49,12 +41,13 @@ install_open_nvidia_driver=false
 install_closed_nvidia_dkms_driver=false
 install_recommended_software=false
 install_bluetooth=false
+install_dolphin=false
+install_gnome_tweaks=false
 install_new_kernel=false
-patch_pacman=false
 kernel_choice=""
 
 clear
-sudo pacman -Syu --noconfirm || error_prompt
+sudo pacman -Syu --noconfirm
 clear
 
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
@@ -93,54 +86,54 @@ while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
 done
 
 if [[ $desktop_env =~ ^[Kk]$ ]]; then
-  sudo pacman -S --noconfirm dolphin || error_prompt
+  ask_user "Do you want to install Dolphin?" install_dolphin
 elif [[ $desktop_env =~ ^[Gg]$ ]]; then
-  sudo pacman -S --noconfirm gnome-tweaks || error_prompt
+  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
 fi
 
 ask_user "Patch Pacman (CachyOS Pacman)?" patch_pacman
 
 if $patch_pacman; then
-  sudo pacman -S --noconfirm pacman || error_prompt
+  sudo pacman -S --noconfirm pacman
 fi
 
 if $install_cachyos; then
-  wget https://mirror.cachyos.org/cachyos-repo.tar.xz || error_prompt
-  tar xvf cachyos-repo.tar.xz || error_prompt
-  cd cachyos-repo || error_prompt
-  sudo --noconfirm ./cachyos-repo.sh || error_prompt
-  cd .. || error_prompt
-  rm -rf cachyos-repo cachyos-repo.tar.xz || error_prompt
-  sudo pacman -S --noconfirm cachyos-settings || error_prompt
-  sudo pacman -Sy --noconfirm || error_prompt
+  wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
+  tar xvf cachyos-repo.tar.xz &&
+  cd cachyos-repo &&
+  sudo --noconfirm ./cachyos-repo.sh &&
+  cd .. &&
+  rm -rf cachyos-repo cachyos-repo.tar.xz &&
+  sudo pacman -S --noconfirm cachyos-settings
+  sudo pacman -Sy
 fi
 
 if $install_chaotic; then
-  sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || error_prompt
-  sudo pacman-key --lsign-key 3056513887B78AEB || error_prompt
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst || error_prompt
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst || error_prompt
-  bash -c "grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf" || error_prompt
-  sudo pacman -Sy --noconfirm || error_prompt
+  sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com &&
+  sudo pacman-key --lsign-key 3056513887B78AEB &&
+  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
+  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
+  grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf &&
+  sudo pacman -Sy --noconfirm
 fi
 
 if $install_kernel_manager; then
-  sudo pacman -S --noconfirm cachyos-kernel-manager || error_prompt
+  sudo pacman -S --noconfirm cachyos-kernel-manager
 fi
 
 if $install_gaming_meta; then
-  sudo pacman -S --noconfirm cachyos-gaming-meta || error_prompt
+  sudo pacman -S --noconfirm cachyos-gaming-meta
 fi
 
 if $install_open_nvidia_driver; then
-  sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings || error_prompt
+  sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings || error_prompt
-  sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf || error_prompt
-  sudo mkdir -p /etc/pacman.d/hooks || error_prompt
-  bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
+  sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
+  sudo mkdir -p /etc/pacman.d/hooks
+  sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
 [Trigger]
 Operation=Install
 Operation=Upgrade
@@ -152,29 +145,29 @@ Target=nvidia
 Depends=mkinitcpio
 When=PostTransaction
 Exec=/usr/bin/mkinitcpio -P
-EOF' || error_prompt
+EOF'
 fi
 
 if $install_recommended_software; then
-  sudo pacman -Sy --noconfirm || error_prompt
+  sudo pacman -Sy --noconfirm
   install_packages yay ufw fzf python python-pip zram-generator fastfetch preload flatpak git wget gedit thermald
-  sudo systemctl enable --now ufw preload || error_prompt
+  sudo systemctl enable --now ufw preload
 fi
 
 if $install_bluetooth; then
   install_packages bluez blueman bluez-utils
-  sudo systemctl enable --now bluetooth || error_prompt
+  sudo systemctl enable --now bluetooth
 fi
 
 if $install_new_kernel; then
   case $kernel_choice in
     1)
       sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers || error_prompt
+      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
       ;;
     2)
       sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers || error_prompt
+      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     *)
       echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
@@ -183,16 +176,16 @@ if $install_new_kernel; then
   esac
 fi
 
-wget https://mirror.cachyos.org/cachyos-repo.tar.xz || error_prompt
-tar xvf cachyos-repo.tar.xz || error_prompt
-cd cachyos-repo || error_prompt
-sudo --noconfirm ./cachyos-repo.sh || error_prompt
-cd .. || error_prompt
-rm -rf cachyos-repo cachyos-repo.tar.xz || error_prompt
+wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
+tar xvf cachyos-repo.tar.xz &&
+cd cachyos-repo &&
+sudo --noconfirm ./cachyos-repo.sh &&
+cd .. &&
+rm -rf cachyos-repo cachyos-repo.tar.xz
 
 cleanup_temp_files() {
-  sudo pacman -Scc --noconfirm || error_prompt
-  sudo rm -rf /tmp/* || error_prompt
+  sudo pacman -Scc --noconfirm
+  sudo rm -rf /tmp/*
 }
 
 cleanup_temp_files
