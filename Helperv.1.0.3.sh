@@ -5,7 +5,22 @@ blue="\e[34m"
 reset="\e[0m"
 
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
-set -e
+
+run_cmd() {
+  while true; do
+    "$@"
+    if [ $? -eq 0 ]; then
+      break
+    else
+      echo -e "${red}DUDE THE FUCKING SCRIPT MADE A FUCKING ERROR DO YOU STILL WANT TO CONTINUE? [y/n]${reset}"
+      read -r -n 1 ans
+      echo ""
+      if [[ $ans =~ ^[Nn]$ ]]; then
+        exit 1
+      fi
+    fi
+  done
+}
 
 ask_user() {
   local prompt="$1"
@@ -29,7 +44,7 @@ ask_user() {
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
-    sudo pacman -S --needed --noconfirm "${packages[@]}"
+    run_cmd sudo pacman -S --needed --noconfirm "${packages[@]}"
   fi
 }
 
@@ -48,7 +63,7 @@ patch_pacman=false
 kernel_choice=""
 
 clear
-sudo pacman -Syu --noconfirm
+run_cmd sudo pacman -Syu --noconfirm
 clear
 
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
@@ -95,46 +110,46 @@ fi
 ask_user "Patch Pacman (CachyOS Pacman)?" patch_pacman
 
 if $patch_pacman; then
-  sudo pacman -S --noconfirm pacman
+  run_cmd sudo pacman -S --noconfirm pacman
 fi
 
 if $install_cachyos; then
-  wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
-  tar xvf cachyos-repo.tar.xz &&
-  cd cachyos-repo &&
-  sudo --noconfirm ./cachyos-repo.sh &&
-  cd .. &&
-  rm -rf cachyos-repo cachyos-repo.tar.xz &&
-  sudo pacman -S --noconfirm cachyos-settings
-  sudo pacman -Sy
+  run_cmd wget https://mirror.cachyos.org/cachyos-repo.tar.xz
+  run_cmd tar xvf cachyos-repo.tar.xz
+  cd cachyos-repo
+  run_cmd sudo --noconfirm ./cachyos-repo.sh
+  cd ..
+  run_cmd rm -rf cachyos-repo cachyos-repo.tar.xz
+  run_cmd sudo pacman -S --noconfirm cachyos-settings
+  run_cmd sudo pacman -Sy
 fi
 
 if $install_chaotic; then
-  sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com &&
-  sudo pacman-key --lsign-key 3056513887B78AEB &&
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst &&
-  sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst &&
-  grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf &&
-  sudo pacman -Sy --noconfirm
+  run_cmd sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+  run_cmd sudo pacman-key --lsign-key 3056513887B78AEB
+  run_cmd sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
+  run_cmd sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
+  run_cmd bash -c "grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf"
+  run_cmd sudo pacman -Sy --noconfirm
 fi
 
 if $install_kernel_manager; then
-  sudo pacman -S --noconfirm cachyos-kernel-manager
+  run_cmd sudo pacman -S --noconfirm cachyos-kernel-manager
 fi
 
 if $install_gaming_meta; then
-  sudo pacman -S --noconfirm cachyos-gaming-meta
+  run_cmd sudo pacman -S --noconfirm cachyos-gaming-meta
 fi
 
 if $install_open_nvidia_driver; then
-  sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  run_cmd sudo pacman -S --needed --noconfirm linux-cachyos-nvidia-open libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
-  sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
-  sudo mkdir -p /etc/pacman.d/hooks
-  sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
+  run_cmd sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+  run_cmd sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
+  run_cmd sudo mkdir -p /etc/pacman.d/hooks
+  run_cmd bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
 [Trigger]
 Operation=Install
 Operation=Upgrade
@@ -150,25 +165,25 @@ EOF'
 fi
 
 if $install_recommended_software; then
-  sudo pacman -Sy --noconfirm
+  run_cmd sudo pacman -Sy --noconfirm
   install_packages yay ufw fzf python python-pip zram-generator fastfetch preload flatpak git wget gedit thermald
-  sudo systemctl enable --now ufw preload
+  run_cmd sudo systemctl enable --now ufw preload
 fi
 
 if $install_bluetooth; then
   install_packages bluez blueman bluez-utils
-  sudo systemctl enable --now bluetooth
+  run_cmd sudo systemctl enable --now bluetooth
 fi
 
 if $install_new_kernel; then
   case $kernel_choice in
     1)
-      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+      run_cmd sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
+      run_cmd sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
       ;;
     2)
-      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+      run_cmd sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
+      run_cmd sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     *)
       echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
@@ -177,16 +192,16 @@ if $install_new_kernel; then
   esac
 fi
 
-wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
-tar xvf cachyos-repo.tar.xz &&
-cd cachyos-repo &&
-sudo --noconfirm ./cachyos-repo.sh &&
-cd .. &&
-rm -rf cachyos-repo cachyos-repo.tar.xz
+run_cmd wget https://mirror.cachyos.org/cachyos-repo.tar.xz
+run_cmd tar xvf cachyos-repo.tar.xz
+cd cachyos-repo
+run_cmd sudo --noconfirm ./cachyos-repo.sh
+cd ..
+run_cmd rm -rf cachyos-repo cachyos-repo.tar.xz
 
 cleanup_temp_files() {
-  sudo pacman -Scc --noconfirm
-  sudo rm -rf /tmp/*
+  run_cmd sudo pacman -Scc --noconfirm
+  run_cmd sudo rm -rf /tmp/*
 }
 
 cleanup_temp_files
