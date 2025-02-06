@@ -7,8 +7,6 @@ reset="\e[0m"
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
 set -e
 
-response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
-
 ask_user() {
   local prompt="$1"
   local var_name="$2"
@@ -28,21 +26,6 @@ ask_user() {
   done
 }
 
-ask_partition_input() {
-  local prompt="$1"
-  local var_name="$2"
-  while true; do
-    echo -e "${blue}${prompt}:${reset}"
-    read -r partition_input
-    if [ -b "$partition_input" ]; then
-      eval "$var_name=$partition_input"
-      break
-    else
-      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE TRY AGAIN.${reset}"
-    fi
-  done
-}
-
 install_packages() {
   local packages=("$@")
   if [ ${#packages[@]} -ne 0 ]; then
@@ -57,6 +40,7 @@ install_gaming_meta=false
 install_open_nvidia_driver=false
 install_closed_nvidia_dkms_driver=false
 install_recommended_software=false
+install_bluetooth=false
 install_dolphin=false
 install_gnome_tweaks=false
 install_new_kernel=false
@@ -66,7 +50,6 @@ clear
 sudo pacman -Syu --noconfirm
 clear
 
-clear
 echo -e "${blue}Welcome to my Arch Linux post installation script!${reset}"
 
 ask_user "Do you want to install the CachyOS repos?" install_cachyos
@@ -85,12 +68,12 @@ if $install_new_kernel; then
   echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
   echo -e "1. linux-cachyos"
   echo -e "2. linux-cachyos-rc"
-  echo -e "3. linux-vfio"
   read -r -n 1 kernel_choice
   echo ""
 fi
 
-ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, bluez, blueman, bluez-utils, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald,)" install_recommended_software
+ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
+ask_user "Do you want to install Bluetooth?" install_bluetooth
 
 echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
@@ -118,7 +101,7 @@ if $install_cachyos; then
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
   cd cachyos-repo &&
-  sudo -- noconfirme./cachyos-repo.sh &&
+  sudo --noconfirm ./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
   sudo pacman -S --noconfirm cachyos-settings
@@ -166,27 +149,38 @@ fi
 
 if $install_recommended_software; then
   sudo pacman -Sy --noconfirm
-  sudo pacman -S --needed --noconfirm ufw fzf python python-pip bluez blueman bluez-utils zram-generator fastfetch preload flatpak git wget gedit thermald
-  sudo systemctl enable --now ufw bluetooth preload
+  install_packages yay ufw fzf python python-pip zram-generator fastfetch preload flatpak git wget gedit thermald
+  sudo systemctl enable --now ufw preload
+fi
+
+if $install_bluetooth; then
+  install_packages bluez blueman bluez-utils
+  sudo systemctl enable --now bluetooth
 fi
 
 if $install_new_kernel; then
   case $kernel_choice in
     1)
+      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
       sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
       ;;
     2)
+      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
       sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
-    3)
-      sudo pacman -S --noconfirm linux-vfio linux-vfio-headers
-      ;;
     *)
-      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1, 2, OR 3."
+      echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
       exit 1
       ;;
   esac
 fi
+
+wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
+tar xvf cachyos-repo.tar.xz &&
+cd cachyos-repo &&
+sudo --noconfirm ./cachyos-repo.sh &&
+cd .. &&
+rm -rf cachyos-repo cachyos-repo.tar.xz
 
 cleanup_temp_files() {
   sudo pacman -Scc --noconfirm
