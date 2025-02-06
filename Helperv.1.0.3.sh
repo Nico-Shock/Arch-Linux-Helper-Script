@@ -44,6 +44,7 @@ install_bluetooth=false
 install_dolphin=false
 install_gnome_tweaks=false
 install_new_kernel=false
+patch_pacman=false
 kernel_choice=""
 
 clear
