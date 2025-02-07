@@ -2,11 +2,6 @@
 
 ### **You can run this command to execute the script directly:**
 ```
-curl -L "https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.sh" -o /tmp/Helper.sh && chmod +x /tmp/Helper.sh && sudo /tmp/Helper.sh && rm /tmp/Helper.sh
-```
-
-### *OR:*
-```
 bash <(curl -L https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.sh)
 ```
 
