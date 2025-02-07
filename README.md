@@ -22,6 +22,7 @@ sudo bash <(curl -L https://github.com/Nico-Shock/Arch-Linux-Helper-Script/relea
 - **Installs a better kernel for you.**
 - **Deletes temporary files and cleans up your system.**
 - **Automatically updates your system.**
+- **Remove bloatware from your Gnome Desktop (just uninstall Gnome apps considered "bloatware"). Also uninstall Timeshift.**
 
 ### *The script asks you about every step you're running before it gets executed. Future updates will be made to improve the experience.*
 
