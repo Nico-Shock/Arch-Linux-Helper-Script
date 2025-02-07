@@ -1,10 +1,9 @@
 #!/bin/bash
 if [ "$EUID" -ne 0 ]; then
   clear
-  echo "YOU NEED TO RUN THE SCRIPT WITH SUDO PRESS ANY KEY TO EXIT"
-  read -n 1
-  clear
-  exit 1
+  echo "YOU NEED TO RUN THE SCRIPT WITH SUDO..."
+  sudo bash "$0" "$@"
+  exit 0
 fi
 
 red="\e[31m"
