@@ -194,7 +194,6 @@ rm -rf cachyos-repo cachyos-repo.tar.xz
 
 cleanup_temp_files() {
   sudo pacman -Scc --noconfirm &&
-  sudo rm -rf /tmp/*
 }
 
 cleanup_temp_files
