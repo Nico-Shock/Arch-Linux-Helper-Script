@@ -105,7 +105,6 @@ if $install_cachyos; then
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
   sudo pacman -S --noconfirm cachyos-settings
-  sudo pacman -Sy
 fi
 
 if $install_chaotic; then
