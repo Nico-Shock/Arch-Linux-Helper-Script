@@ -1,4 +1,12 @@
 #!/bin/bash
+if [ "$EUID" -ne 0 ]; then
+  clear
+  echo "YOU NEED TO RUN THE SCRIPT WITH SUDO PRESS ANY KEY TO EXIT"
+  read -n 1
+  clear
+  exit 1
+fi
+
 red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
@@ -41,6 +49,8 @@ install_closed_nvidia_dkms_driver=false
 install_recommended_software=false
 install_bluetooth=false
 install_new_kernel=false
+patch_pacman=false
+unload_gnome=false
 kernel_choice=""
 
 clear
@@ -79,8 +89,12 @@ done
 
 ask_user "Patch Pacman (CachyOS Pacman)?" patch_pacman
 
+if [[ "$desktop_env" =~ ^[Gg]$ ]]; then
+  ask_user "Depload your GNOME desktop (if bloatware exists)?" unload_gnome
+fi
+
 if $install_cachyos; then
-  sudo pacman -S --noconfirm wget &&
+  sudo pacman -S --needed --noconfirm wget &&
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
   cd cachyos-repo &&
@@ -166,6 +180,10 @@ fi
 
 if $patch_pacman; then
   sudo pacman -S --needed --noconfirm pacman
+fi
+
+if [[ "$desktop_env" =~ ^[Gg]$ ]] && $unload_gnome; then
+  sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem)$')
 fi
 
 wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
