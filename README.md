@@ -6,11 +6,14 @@ curl -L "https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/
 ```
 
 ### *OR:*
-
 ```
 bash <(curl -L https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.sh)
 ```
 
+### *OR FOR v.1.0.3 (PRE-RELEASE):*
+```
+bash <(curl -L github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/download/v.1.0.3/Helper.sh)
+```
 ## **What the Script Does**
 
 - **The script will automatically install the CachyOS repos to make your system more stable and make many things easier to install from the repo. Everything will be automated so you don’t need to edit anything.**
