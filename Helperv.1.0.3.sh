@@ -1,10 +1,4 @@
 #!/bin/bash
-if [ "$EUID" -ne 0 ]; then
-  clear
-  echo "YOU NEED TO RUN THE SCRIPT WITH SUDO..."
-  sudo bash "$0" "$@"
-  exit 0
-fi
 
 red="\e[31m"
 blue="\e[34m"
