@@ -38,3 +38,9 @@ bash <(curl -L github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/download/
 **Troubleshooting:**
 
 - If you get a question about adding the "Garuda Build" key, press **no** because while system upgrade it will fail completely and you need to manually install the CachyOS repos again.
+
+### **Infos:**
+
+- Make sure that the pre-release script can break things because it's still in development and, because of that, it makes the script very unstable.
+- The script does not install a desktop environment for you.
+- AMD driver installation is not there yet (don't want to add it yet).
