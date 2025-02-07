@@ -1,5 +1,4 @@
 #!/bin/bash
-
 red="\e[31m"
 blue="\e[34m"
 reset="\e[0m"
@@ -41,8 +40,6 @@ install_open_nvidia_driver=false
 install_closed_nvidia_dkms_driver=false
 install_recommended_software=false
 install_bluetooth=false
-install_dolphin=false
-install_gnome_tweaks=false
 install_new_kernel=false
 kernel_choice=""
 
@@ -57,13 +54,10 @@ ask_user "Do you want to install the Chaotic-AUR-repos?" install_chaotic
 ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_manager
 ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 ask_user "Do you want to install Nvidia open drivers?" install_open_nvidia_driver
-
 if ! $install_open_nvidia_driver; then
   ask_user "Do you want to install Nvidia closed dkms drivers?" install_closed_nvidia_dkms_driver
 fi
-
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
-
 if $install_new_kernel; then
   echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL:"
   echo -e "1. linux-cachyos"
@@ -71,40 +65,29 @@ if $install_new_kernel; then
   read -r -n 1 kernel_choice
   echo ""
 fi
-
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
 ask_user "Do you want to install Bluetooth?" install_bluetooth
 
-echo -e "${blue}Do you use KDE or Gnome? [k/g/n]:${reset}"
+echo -e "${blue}Do you use KDE, Gnome or none? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
-
 while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
   echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
   read -r -n 1 desktop_env
   echo ""
 done
 
-if [[ $desktop_env =~ ^[Kk]$ ]]; then
-  ask_user "Do you want to install Dolphin?" install_dolphin
-elif [[ $desktop_env =~ ^[Gg]$ ]]; then
-  ask_user "Do you want to install Gnome Tweaks?" install_gnome_tweaks
-fi
-
 ask_user "Patch Pacman (CachyOS Pacman)?" patch_pacman
 
-if $patch_pacman; then
-  sudo pacman -S --noconfirm pacman
-fi
-
 if $install_cachyos; then
+  sudo pacman -S --noconfirm wget &&
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
   tar xvf cachyos-repo.tar.xz &&
   cd cachyos-repo &&
-  sudo --noconfirm ./cachyos-repo.sh &&
+  sudo ./cachyos-repo.sh &&
   cd .. &&
   rm -rf cachyos-repo cachyos-repo.tar.xz &&
-  sudo pacman -S --noconfirm cachyos-settings
+  sudo pacman -S --needed --noconfirm cachyos-settings
 fi
 
 if $install_chaotic; then
@@ -117,11 +100,11 @@ if $install_chaotic; then
 fi
 
 if $install_kernel_manager; then
-  sudo pacman -S --noconfirm cachyos-kernel-manager
+  sudo pacman -S --needed --noconfirm cachyos-kernel-manager
 fi
 
 if $install_gaming_meta; then
-  sudo pacman -S --noconfirm cachyos-gaming-meta
+  sudo pacman -S --needed --noconfirm cachyos-gaming-meta
 fi
 
 if $install_open_nvidia_driver; then
@@ -129,9 +112,9 @@ if $install_open_nvidia_driver; then
 fi
 
 if $install_closed_nvidia_dkms_driver; then
-  sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
-  sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
-  sudo mkdir -p /etc/pacman.d/hooks
+  sudo pacman -S --needed --noconfirm linux-headers nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings &&
+  sudo sed -i 's/^MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf &&
+  sudo mkdir -p /etc/pacman.d/hooks &&
   sudo bash -c 'cat > /etc/pacman.d/hooks/nvidia.hook <<EOF
 [Trigger]
 Operation=Install
@@ -147,26 +130,15 @@ Exec=/usr/bin/mkinitcpio -P
 EOF'
 fi
 
-if $install_recommended_software; then
-  sudo pacman -Sy --noconfirm
-  install_packages yay ufw fzf python python-pip zram-generator fastfetch preload flatpak git wget gedit thermald
-  sudo systemctl enable --now ufw preload
-fi
-
-if $install_bluetooth; then
-  install_packages bluez blueman bluez-utils
-  sudo systemctl enable --now bluetooth
-fi
-
 if $install_new_kernel; then
   case $kernel_choice in
     1)
-      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --noconfirm linux-cachyos linux-cachyos-headers
+      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true &&
+      sudo pacman -S --needed --noconfirm linux-cachyos linux-cachyos-headers
       ;;
     2)
-      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true &&
+      sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     *)
       echo -e "DUDE, YOU MADE A FUCKING INVALID CHOICE. PLEASE CHOOSE 1 OR 2."
@@ -175,15 +147,36 @@ if $install_new_kernel; then
   esac
 fi
 
+if $install_recommended_software; then
+  sudo pacman -Sy --noconfirm &&
+  install_packages yay ufw fzf python python-pip zram-generator fastfetch preload flatpak git wget gedit thermald &&
+  sudo systemctl enable --now ufw preload
+fi
+
+if $install_bluetooth; then
+  install_packages bluez blueman bluez-utils &&
+  sudo systemctl enable --now bluetooth
+fi
+
+if [[ "$desktop_env" =~ ^[Kk]$ ]]; then
+  sudo pacman -S --needed --noconfirm dolphin
+elif [[ "$desktop_env" =~ ^[Gg]$ ]]; then
+  sudo pacman -S --needed --noconfirm gnome-tweaks
+fi
+
+if $patch_pacman; then
+  sudo pacman -S --needed --noconfirm pacman
+fi
+
 wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
 tar xvf cachyos-repo.tar.xz &&
 cd cachyos-repo &&
-sudo --noconfirm ./cachyos-repo.sh &&
+sudo ./cachyos-repo.sh &&
 cd .. &&
 rm -rf cachyos-repo cachyos-repo.tar.xz
 
 cleanup_temp_files() {
-  sudo pacman -Scc --noconfirm
+  sudo pacman -Scc --noconfirm &&
   sudo rm -rf /tmp/*
 }
 
