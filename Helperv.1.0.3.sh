@@ -186,7 +186,7 @@ cd .. &&
 rm -rf cachyos-repo cachyos-repo.tar.xz
 
 cleanup_temp_files() {
-  sudo pacman -Scc --noconfirm &&
+  sudo pacman -Scc --noconfirm
 }
 
 cleanup_temp_files
