@@ -12,7 +12,6 @@ blue="\e[34m"
 reset="\e[0m"
 
 trap "echo -e '${red}Script aborted.${reset}'; exit 1" SIGINT
-set -e
 
 ask_user() {
   local prompt="$1"
@@ -183,7 +182,7 @@ if $patch_pacman; then
 fi
 
 if [[ "$desktop_env" =~ ^[Gg]$ ]] && $unload_gnome; then
-  sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem)$')
+sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem|gnome-desktop|gnome-app-list|gnome-autoar|gnome-desktop-common|gnome-settings-daemon|gnome-online-accounts|gnome-color-manager|gnome-bluetooth|gnome-session)$')
 fi
 
 wget https://mirror.cachyos.org/cachyos-repo.tar.xz &&
