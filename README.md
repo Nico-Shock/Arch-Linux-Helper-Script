@@ -5,7 +5,9 @@
 bash <(curl -L https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/latest/download/Helper.sh)
 ```
 
-### *OR FOR v.1.0.3 (PRE-RELEASE) RECOMMENDED:*
+### RECOMMENDED:
+
+### *OR FOR v.1.0.3 (PRE-RELEASE):*
 ```
 bash <(curl -L github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/download/v.1.0.3/Helper.sh)
 ```
