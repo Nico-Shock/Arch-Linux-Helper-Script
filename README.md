@@ -13,8 +13,8 @@ bash <(curl -L github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/download/
 ```
 ## **What the Script Does**
 
-- **The script will automatically install the CachyOS repos to make your system more stable and make many things easier to install from the repo. Everything will be automated so you don’t need to edit anything.**
-- **Then, the script will install the Chaotic AUR repos (for the same bad explained reason as the CachyOS repos).**
+- **The script will automatically install the CachyOS repos.**
+- **Then, the script will install the Chaotic AUR repos.**
 - **Next, the script will install the CachyOS Kernel Manager for you.**
 - **Then, the script will install the CachyOS Gaming Meta to... game on it.**
 - **Installs the CachyOS open Nvidia drivers or the closed nvidia-dkms drivers.**
