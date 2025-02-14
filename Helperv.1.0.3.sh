@@ -82,18 +82,23 @@ fi
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
 if $install_new_kernel; then
-  while true; do
-    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL (your choice will uninstall the other option):"
-    echo -e "1. linux-cachyos"
-    echo -e "2. linux-cachyos-rc"
-    read -r -n 1 kernel_choice
-    echo ""
-    if [[ "$kernel_choice" == "1" || "$kernel_choice" == "2" ]]; then
-      break
-    else
-      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN (choose 1 or 2):${reset}"
-    fi
-  done
+  case $kernel_choice in
+    1)
+      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
+      sudo pacman -S --needed --noconfirm linux-cachyos linux-cachyos-headers
+      ;;
+    2)
+      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
+      sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+      ;;
+    *)
+      echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2."
+      exit 1
+      ;;
+  esac
+  echo -e "${blue}Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
+  read -r -n 1
+  echo ""
 fi
 
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
