@@ -38,6 +38,8 @@ install_kernel_manager=false
 install_gaming_meta=false
 install_open_nvidia_driver=false
 install_closed_nvidia_dkms_driver=false
+install_amdgpu_driver=false
+install_intel_driver=false
 install_recommended_software=false
 install_bluetooth=false
 install_new_kernel=false
@@ -62,10 +64,19 @@ ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_man
 
 ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 
-ask_user "Do you want to install Nvidia open drivers?" install_open_nvidia_driver
+if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
+  ask_user "Do you want to install NVIDIA open drivers?" install_open_nvidia_driver
+  if ! $install_open_nvidia_driver; then
+    ask_user "Do you want to install NVIDIA closed dkms drivers?" install_closed_nvidia_dkms_driver
+  fi
+fi
 
-if ! $install_open_nvidia_driver; then
-  ask_user "Do you want to install Nvidia closed dkms drivers?" install_closed_nvidia_dkms_driver
+if lspci | grep -E "VGA|3D" | grep -qi "AMD"; then
+  ask_user "Do you want to install AMD drivers?" install_amdgpu_driver
+fi
+
+if lspci | grep -E "VGA|3D" | grep -qi "Intel"; then
+  ask_user "Do you want to install the Intel drivers?" install_intel_driver
 fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
@@ -182,14 +193,33 @@ EOF'
   echo ""
 fi
 
+if $install_amdgpu_driver; then
+  sudo pacman -S --needed --noconfirm mesa vulkan-radeon lib32-mesa vulkan-tools lib32-vulkan-radeon amdvlk
+  sudo bash -c 'cat > /etc/modprobe.d/amdgpu.conf <<EOF
+options amdgpu si_support=1
+options amdgpu cik_support=1
+EOF'
+  sudo bash -c 'cat > /etc/modprobe.d/radeon.conf <<EOF
+options radeon si_support=0
+options radeon cik_support=0
+EOF'
+  sudo mkinitcpio -P
+  echo ""
+fi
+
+if $install_intel_driver; then
+  sudo pacman -S --needed --noconfirm mesa xf86-video-intel lib32-mesa intel-media-driver libva-intel-driver
+  echo ""
+fi
+
 if $install_new_kernel; then
   case $kernel_choice in
     1)
-      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
+      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
       sudo pacman -S --needed --noconfirm linux-cachyos linux-cachyos-headers
       ;;
     2)
-      sudo pacman -Rns --noconfirm linux linux-headers 2>/dev/null || true
+      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
       sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     *)
@@ -226,11 +256,6 @@ if $install_cachyos_pacman; then
   echo ""
 fi
 
-if [[ "$desktop_env" =~ ^[Gg]$ ]] && $depload_gnome; then
-  sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem|gnome-desktop|gnome-app-list|gnome-autoar|gnome-desktop-common|gnome-settings-daemon|gnome-online-accounts|gnome-color-manager|gnome-bluetooth|gnome-session)$')
-  echo ""
-fi
-
 if $install_cachyos; then
   rm -rf cachyos-repo
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz
@@ -239,6 +264,11 @@ if $install_cachyos; then
   sudo ./cachyos-repo.sh
   cd ..
   rm -rf cachyos-repo cachyos-repo.tar.xz
+  echo ""
+fi
+
+if [[ "$desktop_env" =~ ^[Gg]$ ]] && $depload_gnome; then
+  sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem|gnome-desktop|gnome-app-list|gnome-autoar|gnome-desktop-common|gnome-settings-daemon|gnome-online-accounts|gnome-color-manager|gnome-bluetooth|gnome-session)$')
   echo ""
 fi
 
