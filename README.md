@@ -18,6 +18,7 @@ bash <(curl -L github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/download/
 - **Next, the script will install the CachyOS Kernel Manager for you.**
 - **Then, the script will install the CachyOS Gaming Meta to... game on it.**
 - **Installs the CachyOS open Nvidia drivers or the closed nvidia-dkms drivers.**
+- **Installs the AMD or Intel GPU drivers.**
 - **Installs lots of recommended software (the script will show you the installed packages).**
 - **Installs a better kernel for you.**
 - **Deletes temporary files and cleans up your system.**
