@@ -247,11 +247,6 @@ if $install_cachyos_pacman; then
   echo ""
 fi
 
-if [[ "$desktop_env" =~ ^[Gg]$ ]] && $depload_gnome; then
-  sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem|gnome-desktop|gnome-app-list|gnome-autoar|gnome-desktop-common|gnome-settings-daemon|gnome-online-accounts|gnome-color-manager|gnome-bluetooth|gnome-session)$')
-  echo ""
-fi
-
 if $install_cachyos; then
   rm -rf cachyos-repo
   wget https://mirror.cachyos.org/cachyos-repo.tar.xz
@@ -260,6 +255,11 @@ if $install_cachyos; then
   sudo ./cachyos-repo.sh
   cd ..
   rm -rf cachyos-repo cachyos-repo.tar.xz
+  echo ""
+fi
+
+if [[ "$desktop_env" =~ ^[Gg]$ ]] && $depload_gnome; then
+  sudo pacman -Rnns --noconfirm $(pacman -Qq | grep -i '^gnome' | grep -v -E '^(gnome-shell|gnome-terminal|gnome-control-center|gnome-software|gnome-menus|gnome-shell-extensions|gnome-system-monitor|mutter|gdm|eog|totem|gnome-desktop|gnome-app-list|gnome-autoar|gnome-desktop-common|gnome-settings-daemon|gnome-online-accounts|gnome-color-manager|gnome-bluetooth|gnome-session)$')
   echo ""
 fi
 
