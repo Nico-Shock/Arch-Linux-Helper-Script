@@ -98,6 +98,8 @@ if $install_new_kernel; then
       exit 1
       ;;
   esac
+  echo -e "${blue}-> Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
+  read -r -n 1
   echo ""
 fi
 
