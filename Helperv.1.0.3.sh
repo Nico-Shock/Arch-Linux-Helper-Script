@@ -80,21 +80,9 @@ if echo "$gpu_info" | grep -qi "Intel"; then
   ask_user "Do you want to install the Intel drivers?" install_intel_driver
 fi
 
-ask_user "Do you want to install a new linux kernel?" install_new_kernel
+aask_user "Do you want to install a new linux kernel?" install_new_kernel
 
 if $install_new_kernel; then
-  while true; do
-    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL (your choice will uninstall the other option):"
-    echo -e "1. linux-cachyos"
-    echo -e "2. linux-cachyos-rc"
-    read -r -n 1 kernel_choice
-    echo ""
-    if [[ "$kernel_choice" == "1" || "$kernel_choice" == "2" ]]; then
-      break
-    else
-      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN (choose 1 or 2):${reset}"
-    fi
-  done
   case $kernel_choice in
     1)
       sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
