@@ -10,7 +10,7 @@ ask_user() {
   local prompt="$1"
   local var_name="$2"
   while true; do
-    echo -e "${blue}${prompt} [y/n]:${reset}"
+    echo -e "${blue}-> ${prompt} [y/n]:${reset}"
     read -r -n 1 response
     echo ""
     if [[ $response =~ ^[Yy]$ ]]; then
@@ -20,7 +20,7 @@ ask_user() {
       eval "$var_name=false"
       break
     else
-      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[y/n]:${reset}"
+      echo -e "${blue}-> DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN. [y/n]:${reset}"
     fi
   done
 }
@@ -64,24 +64,26 @@ ask_user "Do you want to install the CachyOS Kernel Manager?" install_kernel_man
 
 ask_user "Do you want to install the CachyOS Gaming Meta?" install_gaming_meta
 
-if lspci | grep -E "VGA|3D" | grep -qi "NVIDIA"; then
+gpu_info=$(lspci | grep -E "VGA|3D")
+if echo "$gpu_info" | grep -qi "NVIDIA"; then
   ask_user "Do you want to install NVIDIA open drivers?" install_open_nvidia_driver
   if ! $install_open_nvidia_driver; then
     ask_user "Do you want to install NVIDIA closed dkms drivers?" install_closed_nvidia_dkms_driver
   fi
 fi
 
-if lspci | grep -E "VGA|3D" | grep -qi "AMD"; then
+if echo "$gpu_info" | grep -qi "AMD"; then
   ask_user "Do you want to install AMD drivers?" install_amdgpu_driver
 fi
 
-if lspci | grep -E "VGA|3D" | grep -qi "Intel"; then
+if echo "$gpu_info" | grep -qi "Intel"; then
   ask_user "Do you want to install the Intel drivers?" install_intel_driver
 fi
 
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
-
 if $install_new_kernel; then
+  echo -e "${blue}-> Please choose a kernel option (1 for linux-cachyos, 2 for linux-cachyos-rc):${reset}"
+  read -r kernel_choice
   case $kernel_choice in
     1)
       sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
@@ -92,11 +94,11 @@ if $install_new_kernel; then
       sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     *)
-      echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2."
+      echo -e "${blue}-> DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2.${reset}"
       exit 1
       ;;
   esac
-  echo -e "${blue}Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
+  echo -e "${blue}-> Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
   read -r -n 1
   echo ""
 fi
@@ -105,11 +107,11 @@ ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, p
 
 ask_user "Do you want to install Bluetooth?" install_bluetooth
 
-echo -e "${blue}Do you use KDE, Gnome or none? [k/g/n]:${reset}"
+echo -e "${blue}-> Do you use KDE, Gnome or none? [k/g/n]:${reset}"
 read -r -n 1 desktop_env
 echo ""
 while [[ ! "$desktop_env" =~ ^[KkGgNn]$ ]]; do
-  echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
+  echo -e "${blue}-> DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN.[k/g/n]:${reset}"
   read -r -n 1 desktop_env
   echo ""
 done
@@ -121,15 +123,14 @@ if [[ "$desktop_env" =~ ^[Gg]$ ]]; then
 fi
 
 ask_user "Do you want to change parallels downloads (make downloads faster)?" change_parallels
-
 if $change_parallels; then
   while true; do
-    echo -e "${blue}PLEASE CHOOSE AN OPTION (max. 20, min. 5):${reset}"
+    echo -e "${blue}-> PLEASE CHOOSE AN OPTION (max. 20, min. 5):${reset}"
     read -r parallel_input
     if [[ "$parallel_input" =~ ^[0-9]+$ ]] && [ "$parallel_input" -ge 5 ] && [ "$parallel_input" -le 20 ]; then
       break
     else
-      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN (choose a number between 5 and 20):${reset}"
+      echo -e "${blue}-> DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN (choose a number between 5 and 20):${reset}"
     fi
   done
   if grep -q "^#\?ParallelDownloads" /etc/pacman.conf; then
@@ -159,8 +160,7 @@ if $install_chaotic; then
   sudo pacman-key --lsign-key 3056513887B78AEB
   sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
   sudo pacman -U --noconfirm https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
-  grep -q 'chaotic-aur' /etc/pacman.conf || echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf
-  sudo pacman -Sy --noconfirm
+  grep -q 'chaotic-aur' /etc/pacman.conf || echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
   echo ""
 fi
 
@@ -214,24 +214,6 @@ fi
 
 if $install_intel_driver; then
   sudo pacman -S --needed --noconfirm mesa xf86-video-intel lib32-mesa intel-media-driver libva-intel-driver
-  echo ""
-fi
-
-if $install_new_kernel; then
-  case $kernel_choice in
-    1)
-      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --needed --noconfirm linux-cachyos linux-cachyos-headers
-      ;;
-    2)
-      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
-      sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
-      ;;
-    *)
-      echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2."
-      exit 1
-      ;;
-  esac
   echo ""
 fi
 
