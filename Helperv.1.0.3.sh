@@ -83,21 +83,23 @@ fi
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
 if $install_new_kernel; then
-  echo -e "${blue}Are you sure you want to install a new kernel? [y/n]:${reset}"
-  read -r -n 1 response
+  case $kernel_choice in
+    1)
+      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
+      sudo pacman -S --needed --noconfirm linux-cachyos linux-cachyos-headers
+      ;;
+    2)
+      sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
+      sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
+      ;;
+    *)
+      echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2."
+      exit 1
+      ;;
+  esac
+  echo -e "${blue}Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
+  read -r -n 1
   echo ""
-  if [[ $response =~ ^[Yy]$ ]]; then
-    sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
-    sudo pacman -S --needed --noconfirm linux-cachyos linux-cachyos-headers
-    echo -e "${blue}Kernel installed. Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
-    read -r -n 1
-    echo ""
-  elif [[ $response =~ ^[Nn]$ ]]; then
-    echo -e "${blue}Kernel installation canceled.${reset}"
-  else
-    echo -e "${blue}Invalid input. Exiting...${reset}"
-    exit 1
-  fi
 fi
 
 ask_user "Do you want to install recommended software? (yay, ufw, fzf, python, python-pip, zram-generator, fastfetch, preload, flatpak, git, wget, gedit, thermald)" install_recommended_software
