@@ -21,7 +21,7 @@ bash <(curl -L https://github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/l
 
 ### *The script asks you about every step you're running before it gets executed. Future updates will be made to improve the experience.*
 
-**How to run the script:**
+**How to run the script manually:**
 
 - Go into the directory of the file, for example, for Downloads: `cd Downloads/`
 - Then make the file executable: `chmod +x Helper.sh`
