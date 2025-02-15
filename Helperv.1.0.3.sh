@@ -80,11 +80,21 @@ if echo "$gpu_info" | grep -qi "Intel"; then
   ask_user "Do you want to install the Intel drivers?" install_intel_driver
 fi
 
-ask_user "Do you want to install a new kernel?" install_new_kernel
+ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
 if $install_new_kernel; then
-  echo -e "${blue}-> Please choose a kernel option (1 for linux-cachyos, 2 for linux-cachyos-rc):${reset}"
-  read -r kernel_choice
+  while true; do
+    echo -e "PLEASE SELECT THE NUMBER FOR THE KERNEL YOU WANT TO INSTALL (your choice will uninstall the other option):"
+    echo -e "1. linux-cachyos"
+    echo -e "2. linux-cachyos-rc"
+    read -r -n 1 kernel_choice
+    echo ""
+    if [[ "$kernel_choice" == "1" || "$kernel_choice" == "2" ]]; then
+      break
+    else
+      echo -e "${blue}DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE TRY AGAIN (choose 1 or 2):${reset}"
+    fi
+  done
   case $kernel_choice in
     1)
       sudo pacman -Rnns --noconfirm linux linux-headers 2>/dev/null || true
@@ -95,10 +105,12 @@ if $install_new_kernel; then
       sudo pacman -S --needed --noconfirm linux-cachyos-rc linux-cachyos-rc-headers
       ;;
     *)
-      echo -e "${blue}-> DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2.${reset}"
+      echo -e "DUDE, YOU MADE A FUCKING INVALID INPUT. PLEASE CHOOSE 1 OR 2."
       exit 1
       ;;
   esac
+  echo -e "${blue}Make sure to manually change your bootloader to boot from the newly installed kernel. Press any key to continue...${reset}"
+  read -r -n 1
   echo ""
 fi
 
