@@ -82,6 +82,8 @@ fi
 
 aask_user "Do you want to install a new linux kernel?" install_new_kernel
 
+ask_user "Do you want to install a new linux kernel?" install_new_kernel
+
 if $install_new_kernel; then
   case $kernel_choice in
     1)
