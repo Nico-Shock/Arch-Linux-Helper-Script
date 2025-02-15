@@ -138,7 +138,6 @@ if $change_parallels; then
     echo -e "\nParallelDownloads = $parallel_input" | sudo tee -a /etc/pacman.conf
   fi
 fi
-
 echo ""
 
 if $install_cachyos; then
