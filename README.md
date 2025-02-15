@@ -1,3 +1,5 @@
+# REPO MOVED [HERE](https://github.com/Nico-Shock/Arch-Helper-Script)
+
 # Perfect Helper Script for Post Setup After an Arch Installation
 
 ### **You can run this command to execute the latest script directly:**
