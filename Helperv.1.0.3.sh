@@ -80,6 +80,7 @@ if echo "$gpu_info" | grep -qi "Intel"; then
   ask_user "Do you want to install the Intel drivers?" install_intel_driver
 fi
 
+
 ask_user "Do you want to install a new linux kernel?" install_new_kernel
 
 if $install_new_kernel; then
