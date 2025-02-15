@@ -41,3 +41,6 @@ bash <(curl -L github.com/Nico-Shock/Arch-Linux-Helper-Script/releases/download/
 
 - Make sure that the pre-release script can break things because it's still in development and, because of that, it makes the script very unstable.
 - The script does not install a desktop environment for you.
+
+
+## Pictures & Explanations (Coming Soon...)
